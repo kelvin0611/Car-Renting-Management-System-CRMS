@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>P2P Car Rental - User Registration</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+  <style>
+    :root {
+      --primary-color: #007bff;
+      --success-color: #28a745;
+      --danger-color: #dc3545;
+      --warning-color: #ffc107;
+      --light-color: #f8f9fa;
+      --dark-color: #343a40;
+      --border-radius: 8px;
+      --box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      --transition: all 0.3s ease;
+    }
+    
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    
+    body {
+      font-family: 'Segoe UI', Arial, sans-serif;
+      background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+      color: #333;
+      line-height: 1.6;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    
+    .container {
+      width: 100%;
+      max-width: 500px;
+      background: #fff;
+      border-radius: var(--border-radius);
+      box-shadow: var(--box-shadow);
+      overflow: hidden;
+    }
+    
+    .header {
+      background: var(--primary-color);
+      color: white;
+      padding: 24px 20px;
+      text-align: center;
+    }
+    
+    .header .logo {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      font-size: 24px;
+      font-weight: bold;
+      margin-bottom: 8px;
+    }
+    
+    .header h1 {
+      font-size: 24px;
+      margin: 0;
+    }
+    
+    .form-container {
+      padding: 30px;
+    }
+    
+    .form-group {
+      margin-bottom: 20px;
+    }
+    
+    label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 500;
+      color: #555;
+    }
+    
+    input, select {
+      width: 100%;
+      padding: 12px 15px;
+      border: 1px solid #ddd;
+      border-radius: var(--border-radius);
+      font-size: 16px;
+      transition: var(--transition);
+    }
+    
+    input:focus, select:focus {
+      outline: none;
+      border-color: var(--primary-color);
+      box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.25);
+    }
+    
+    .password-container {
+      position: relative;
+    }
+    
+    .toggle-password {
+      position: absolute;
+      right: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      color: #777;
+      cursor: pointer;
+    }
+    
+    .form-footer {
+      margin-top: 25px;
+      text-align: center;
+    }
+    
+    .btn {
+      display: inline-block;
+      padding: 12px 30px;
+      background: var(--primary-color);
+      color: white;
+      border: none;
+      border-radius: var(--border-radius);
+      font-size: 16px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: var(--transition);
+      width: 100%;
+    }
+    
+    .btn:hover {
+      background: #0056b3;
+      transform: translateY(-2px);
+    }
+    
+    .btn:active {
+      transform: translateY(0);
+    }
+    
+    .btn:disabled {
+      background: #6c757d;
+      cursor: not-allowed;
+      transform: none;
+    }
+    
+    .login-link {
+      margin-top: 20px;
+      text-align: center;
+      color: #666;
+    }
+    
+    .login-link a {
+      color: var(--primary-color);
+      text-decoration: none;
+      font-weight: 500;
+    }
+    
+    .login-link a:hover {
+      text-decoration: underline;
+    }
+    
+    .message {
+      margin-top: 20px;
+      padding: 12px 15px;
+      border-radius: var(--border-radius);
+      display: none;
+    }
+    
+    .success {
+      background-color: #d4edda;
+      color: #155724;
+      border: 1px solid #c3e6cb;
+      display: block;
+    }
+    
+    .error {
+      background-color: #f8d7da;
+      color: #721c24;
+      border: 1px solid #f5c6cb;
+      display: block;
+    }
+    
+    .loading {
+      display: inline-block;
+      width: 20px;
+      height: 20px;
+      border: 3px solid rgba(255,255,255,.3);
+      border-radius: 50%;
+      border-top-color: #fff;
+      animation: spin 1s ease-in-out infinite;
+      margin-right: 10px;
+    }
+    
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+    
+    .field-error {
+      color: var(--danger-color);
+      font-size: 14px;
+      margin-top: 5px;
+      display: none;
+    }
+    
+    .password-strength {
+      margin-top: 5px;
+      height: 5px;
+      border-radius: 5px;
+      background: #eee;
+      overflow: hidden;
+    }
+    
+    .password-strength-bar {
+      height: 100%;
+      width: 0;
+      transition: var(--transition);
+    }
+    
+    .weak { background: var(--danger-color); width: 33%; }
+    .medium { background: var(--warning-color); width: 66%; }
+    .strong { background: var(--success-color); width: 100%; }
+    
+    @media (max-width: 576px) {
+      body {
+        padding: 10px;
+      }
+      
+      .form-container {
+        padding: 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <div class="logo">
+        <i class="fa-solid fa-car-side"></i> P2P Car Rental
+      </div>
+      <h1>User Registration</h1>
+    </div>
+    
+    <div class="form-container">
+      <form id="registerForm">
+        <div class="form-group">
+          <label for="userType">User Type</label>
+          <select id="userType" name="userType" required>
+            <option value="">Select User Type</option>
+            <option value="renter">Renter</option>
+            <option value="owner">Car Owner</option>
+          </select>
+          <div class="field-error" id="userTypeError">Please select a user type</div>
+        </div>
+        
+        <div class="form-group">
+          <label for="name">Full Name</label>
+          <input type="text" id="name" name="name" placeholder="Enter your full name" required>
+          <div class="field-error" id="nameError">Please enter a valid name</div>
+        </div>
+        
+        <div class="form-group">
+          <label for="gmail">Email</label>
+          <input type="email" id="gmail" name="gmail" placeholder="Enter your email address" required>
+          <div class="field-error" id="gmailError">Please enter a valid email address</div>
+        </div>
+        
+        <div class="form-group">
+          <label for="identityNo">ID Number</label>
+          <input type="text" id="identityNo" name="identityNo" placeholder="Enter ID number" required>
+          <div class="field-error" id="identityNoError">Please enter ID number</div>
+        </div>
+        
+        <div class="form-group">
+          <label for="address">Address</label>
+          <input type="text" id="address" name="address" placeholder="Enter your full address" required>
+          <div class="field-error" id="addressError">Please enter a valid address</div>
+        </div>
+        
+        <div class="form-group">
+          <label for="password">Password</label>
+          <div class="password-container">
+            <input type="password" id="password" name="password" placeholder="Enter password" required minlength="6">
+            <button type="button" class="toggle-password" id="togglePassword">
+              <i class="fa-solid fa-eye"></i>
+            </button>
+          </div>
+          <div class="password-strength">
+            <div class="password-strength-bar" id="passwordStrength"></div>
+          </div>
+          <div class="field-error" id="passwordError">Password must be at least 6 characters</div>
+        </div>
+        
+        <div class="form-group">
+          <label for="confirmPassword">Confirm Password</label>
+          <div class="password-container">
+            <input type="password" id="confirmPassword" name="confirmPassword" placeholder="Re-enter password" required>
+            <button type="button" class="toggle-password" id="toggleConfirmPassword">
+              <i class="fa-solid fa-eye"></i>
+            </button>
+          </div>
+          <div class="field-error" id="confirmPasswordError">Passwords do not match</div>
+        </div>
+        
+        <div class="form-footer">
+          <button type="submit" class="btn" id="submitBtn">
+            <span id="btnText">Register</span>
+          </button>
+          
+          <div class="login-link">
+            Already have an account? <a href="login.html">Login now</a>
+          </div>
+        </div>
+      </form>
+      
+      <div class="message" id="message"></div>
+    </div>
+  </div>
+
+  <script src="config.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const form = document.getElementById('registerForm');
+      const messageDiv = document.getElementById('message');
+      const submitBtn = document.getElementById('submitBtn');
+      const btnText = document.getElementById('btnText');
+      const passwordInput = document.getElementById('password');
+      const confirmPasswordInput = document.getElementById('confirmPassword');
+      const togglePasswordBtn = document.getElementById('togglePassword');
+      const toggleConfirmPasswordBtn = document.getElementById('toggleConfirmPassword');
+      const passwordStrengthBar = document.getElementById('passwordStrength');
+      
+      // Toggle password visibility
+      togglePasswordBtn.addEventListener('click', function() {
+        const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+        passwordInput.setAttribute('type', type);
+        this.innerHTML = type === 'password' ? '<i class="fa-solid fa-eye"></i>' : '<i class="fa-solid fa-eye-slash"></i>';
+      });
+      
+      toggleConfirmPasswordBtn.addEventListener('click', function() {
+        const type = confirmPasswordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+        confirmPasswordInput.setAttribute('type', type);
+        this.innerHTML = type === 'password' ? '<i class="fa-solid fa-eye"></i>' : '<i class="fa-solid fa-eye-slash"></i>';
+      });
+      
+      // Password strength detection
+      passwordInput.addEventListener('input', function() {
+        const password = this.value;
+        let strength = 0;
+        
+        if (password.length >= 6) strength += 1;
+        if (password.match(/[a-z]+/)) strength += 1;
+        if (password.match(/[A-Z]+/)) strength += 1;
+        if (password.match(/[0-9]+/)) strength += 1;
+        if (password.match(/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]+/)) strength += 1;
+        
+        // Update password strength bar
+        passwordStrengthBar.className = 'password-strength-bar';
+        if (password.length > 0) {
+          if (strength < 2) {
+            passwordStrengthBar.classList.add('weak');
+          } else if (strength < 4) {
+            passwordStrengthBar.classList.add('medium');
+          } else {
+            passwordStrengthBar.classList.add('strong');
+          }
+        }
+      });
+      
+      // Form validation
+      function validateForm() {
+        let isValid = true;
+        
+        // Reset error messages
+        document.querySelectorAll('.field-error').forEach(error => {
+          error.style.display = 'none';
+        });
+        
+        // User type validation
+        const userType = document.getElementById('userType').value;
+        if (!userType) {
+          document.getElementById('userTypeError').style.display = 'block';
+          isValid = false;
+        }
+        
+        // Name validation
+        const name = document.getElementById('name').value;
+        if (!name || name.trim().length < 2) {
+          document.getElementById('nameError').style.display = 'block';
+          isValid = false;
+        }
+        
+        // Email validation
+        const email = document.getElementById('gmail').value;
+        const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!email || !emailPattern.test(email)) {
+          document.getElementById('gmailError').style.display = 'block';
+          isValid = false;
+        }
+        
+        // ID number validation - 移除了格式限制，只检查是否为空
+        const identityNo = document.getElementById('identityNo').value;
+        if (!identityNo) {
+          document.getElementById('identityNoError').style.display = 'block';
+          isValid = false;
+        }
+        
+        // Address validation
+        const address = document.getElementById('address').value;
+        if (!address || address.trim().length < 5) {
+          document.getElementById('addressError').style.display = 'block';
+          isValid = false;
+        }
+        
+        // Password validation
+        const password = document.getElementById('password').value;
+        if (!password || password.length < 6) {
+          document.getElementById('passwordError').style.display = 'block';
+          isValid = false;
+        }
+        
+        // Confirm password validation
+        const confirmPassword = document.getElementById('confirmPassword').value;
+        if (!confirmPassword || password !== confirmPassword) {
+          document.getElementById('confirmPasswordError').style.display = 'block';
+          isValid = false;
+        }
+        
+        return isValid;
+      }
+      
+      // Form submission
+      form.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        
+        if (!validateForm()) return;
+        
+        // Show loading state
+        submitBtn.disabled = true;
+        btnText.innerHTML = '<span class="loading"></span> Registering...';
+        messageDiv.style.display = 'none';
+        
+        try {
+          const formData = {
+            userType: this.userType.value,
+            name: this.name.value,
+            gmail: this.gmail.value,
+            identityNo: this.identityNo.value,
+            address: this.address.value,
+            password: this.password.value
+          };
+
+          const response = await fetch(`${API_BASE}/register`, {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify(formData)
+          });
+
+          const data = await response.json();
+
+          if (!response.ok) {
+            throw new Error(data.error || 'Registration failed, please try again later');
+          }
+
+          messageDiv.innerHTML = `Registration successful! Your user ID is: ${data.user_id}`;
+          messageDiv.className = 'success';
+          messageDiv.style.display = 'block';
+          
+          // Store user information
+          localStorage.setItem('user_id', data.user_id);
+          localStorage.setItem('user_type', formData.userType);
+          
+          // Get additional information based on user type
+          if (formData.userType === 'renter') {
+            try {
+              const renterResponse = await fetch(`${API_BASE}/user/${data.user_id}/renter`);
+              if (renterResponse.ok) {
+                const renterData = await renterResponse.json();
+                localStorage.setItem('renter_id', renterData.renter_id);
+              }
+            } catch (error) {
+              // Silently handle errors
+            }
+          }
+          
+          // Redirect to home page
+          setTimeout(() => {
+            window.location.href = 'index.html';
+          }, 2000);
+          
+        } catch (error) {
+          messageDiv.innerHTML = `Registration failed: ${error.message}`;
+          messageDiv.className = 'error';
+          messageDiv.style.display = 'block';
+        } finally {
+          // Restore button state
+          submitBtn.disabled = false;
+          btnText.textContent = 'Register';
+        }
+      });
+    });
+  </script>
+</body>
+</html>

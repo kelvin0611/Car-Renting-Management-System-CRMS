@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Owner Dashboard</title>
+  <style>
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif; margin: 0; background: #f6f7fb; color: #222; }
+    .topbar { position: sticky; top: 0; background: #ffffff; box-shadow: 0 2px 12px rgba(0,0,0,0.06); padding: 14px 18px; display: flex; justify-content: space-between; align-items: center; z-index: 10; }
+    .brand { font-weight: 800; color: #0b69ff; letter-spacing: 0.4px; }
+    .actions { display: flex; gap: 10px; align-items: center; }
+    .btn { border: 0; padding: 10px 12px; border-radius: 10px; cursor: pointer; font-weight: 650; }
+    .btn.primary { background: #0b69ff; color: #fff; }
+    .btn.ghost { background: #eef3ff; color: #0b69ff; }
+    .btn.danger { background: #ff3b30; color: #fff; }
+    .container { max-width: 1100px; margin: 18px auto; padding: 0 18px 28px; }
+    .grid { display: grid; grid-template-columns: 1.1fr 0.9fr; gap: 14px; }
+    .card { background: #fff; border-radius: 14px; box-shadow: 0 2px 14px rgba(20,20,40,0.06); padding: 14px; }
+    .card h2 { margin: 0 0 10px 0; font-size: 18px; }
+    .muted { color: #667085; font-size: 13px; }
+    .row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .field { display: flex; flex-direction: column; gap: 6px; margin-bottom: 10px; }
+    label { font-size: 13px; color: #475467; font-weight: 650; }
+    input, select, textarea { border: 1px solid #e4e7ec; border-radius: 10px; padding: 10px 12px; font-size: 14px; outline: none; }
+    textarea { min-height: 90px; resize: vertical; }
+    table { width: 100%; border-collapse: collapse; }
+    th, td { text-align: left; padding: 10px 8px; border-bottom: 1px solid #eef2f6; font-size: 14px; }
+    th { font-size: 12px; text-transform: uppercase; letter-spacing: 0.06em; color: #667085; }
+    .pill { display: inline-flex; padding: 4px 10px; border-radius: 999px; font-size: 12px; font-weight: 750; }
+    .pill.ok { background: #e7f8ee; color: #067647; }
+    .pill.warn { background: #fff4e5; color: #b54708; }
+    .pill.bad { background: #ffe4e4; color: #b42318; }
+    .toolbar { display: flex; gap: 10px; align-items: center; justify-content: space-between; margin-bottom: 10px; flex-wrap: wrap; }
+    .toolbar .left { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+    .msg { margin-top: 10px; padding: 10px 12px; border-radius: 12px; font-size: 14px; display: none; }
+    .msg.ok { background: #e7f8ee; color: #067647; display: block; }
+    .msg.err { background: #ffe4e4; color: #b42318; display: block; }
+    @media (max-width: 980px) { .grid { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+  <div class="topbar">
+    <div>
+      <div class="brand">P2P Car Rental · Owner</div>
+      <div class="muted" id="ownerHint">請先登入 owner 帳號（用 user_id）</div>
+    </div>
+    <div class="actions">
+      <button class="btn ghost" onclick="location.href='index.html'">回首頁</button>
+      <button class="btn danger" onclick="logout()">登出</button>
+    </div>
+  </div>
+
+  <div class="container">
+    <div class="grid">
+      <div class="card">
+        <div class="toolbar">
+          <div class="left">
+            <h2 style="margin:0;">我的車輛</h2>
+            <span class="muted">可新增/編輯、切換狀態</span>
+          </div>
+          <button class="btn primary" onclick="reloadAll()">重新整理</button>
+        </div>
+        <div style="overflow:auto;">
+          <table>
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>車款</th>
+                <th>牌照</th>
+                <th>每日價格</th>
+                <th>狀態</th>
+                <th>審核</th>
+                <th>操作</th>
+              </tr>
+            </thead>
+            <tbody id="vehicleTbody">
+              <tr><td colspan="7" class="muted">載入中...</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div id="vehiclesMsg" class="msg"></div>
+      </div>
+
+      <div class="card">
+        <h2>新增 / 編輯車輛</h2>
+        <div class="muted" style="margin-bottom: 10px;">第一次先在登入頁登入 owner，這裡會用 localStorage 的 `user_id`。</div>
+
+        <input type="hidden" id="vehicle_id" />
+
+        <div class="row">
+          <div class="field">
+            <label>車種 carType *</label>
+            <input id="carType" placeholder="SUV / Sedan ..." />
+          </div>
+          <div class="field">
+            <label>牌照 lisenceNum *</label>
+            <input id="lisenceNum" placeholder="AB1234" />
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="field">
+            <label>年份 year *</label>
+            <input id="year" type="number" min="1980" max="2100" />
+          </div>
+          <div class="field">
+            <label>座位 seatNum *</label>
+            <input id="seatNum" type="number" min="1" max="12" />
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="field">
+            <label>品牌 brand</label>
+            <input id="brand" placeholder="Toyota" />
+          </div>
+          <div class="field">
+            <label>型號 model</label>
+            <input id="model" placeholder="RAV4" />
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="field">
+            <label>地點 location *</label>
+            <input id="location" placeholder="Kowloon" />
+          </div>
+          <div class="field">
+            <label>每日價格 dailyPrice *</label>
+            <input id="dailyPrice" type="number" min="0" step="0.01" />
+          </div>
+        </div>
+
+        <div class="field">
+          <label>圖片 URL photoURL</label>
+          <input id="photoURL" placeholder="https://..." />
+        </div>
+        <div class="field">
+          <label>描述 description</label>
+          <textarea id="description" placeholder="車況/備註..."></textarea>
+        </div>
+
+        <div class="row">
+          <button class="btn primary" onclick="saveVehicle()">儲存</button>
+          <button class="btn ghost" onclick="resetForm()">清空表單</button>
+        </div>
+
+        <hr style="border:none;border-top:1px solid #eef2f6;margin:14px 0;">
+
+        <h2>我的租單 / 收入</h2>
+        <div class="row">
+          <button class="btn ghost" onclick="loadOwnerRentals()">載入我的租單</button>
+          <button class="btn ghost" onclick="loadOwnerRevenue()">載入月收入</button>
+        </div>
+        <div id="ownerStats" class="muted" style="margin-top:10px;"></div>
+        <div id="ownerMsg" class="msg"></div>
+      </div>
+    </div>
+  </div>
+
+  <script src="config.js"></script>
+  <script>
+    function getUserId() {
+      const id = localStorage.getItem('user_id');
+      return id ? parseInt(id) : null;
+    }
+
+    function logout() {
+      localStorage.removeItem('user_id');
+      localStorage.removeItem('renter_id');
+      alert('已登出');
+      location.href = 'login.html';
+    }
+
+    function statusPill(status) {
+      if (status === 'available') return '<span class="pill ok">available</span>';
+      if (status === 'maintenance') return '<span class="pill warn">maintenance</span>';
+      if (status === 'rented') return '<span class="pill bad">rented</span>';
+      return `<span class="pill warn">${status || 'unknown'}</span>`;
+    }
+
+    function verifyPill(status) {
+      if (status === 'approved') return '<span class="pill ok">approved</span>';
+      if (status === 'rejected') return '<span class="pill bad">rejected</span>';
+      return '<span class="pill warn">pending</span>';
+    }
+
+    function setMsg(elId, ok, text) {
+      const el = document.getElementById(elId);
+      if (!text) { el.className = 'msg'; el.style.display = 'none'; el.textContent = ''; return; }
+      el.className = 'msg ' + (ok ? 'ok' : 'err');
+      el.textContent = text;
+    }
+
+    async function reloadAll() {
+      await loadVehicles();
+    }
+
+    async function loadVehicles() {
+      const userId = getUserId();
+      if (!userId) {
+        document.getElementById('ownerHint').textContent = '尚未登入：請先到 login.html 登入 owner。';
+        setMsg('vehiclesMsg', false, '找不到 user_id，請先登入。');
+        return;
+      }
+      document.getElementById('ownerHint').textContent = `Owner user_id = ${userId}`;
+      setMsg('vehiclesMsg', true, '');
+
+      const tbody = document.getElementById('vehicleTbody');
+      tbody.innerHTML = '<tr><td colspan="7" class="muted">載入中...</td></tr>';
+
+      try {
+        const res = await fetch(`${API_BASE}/owner/${userId}/vehicles`);
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || '載入失敗');
+
+        if (!data.length) {
+          tbody.innerHTML = '<tr><td colspan="7" class="muted">目前沒有車輛，右側可以新增。</td></tr>';
+          return;
+        }
+
+        tbody.innerHTML = data.map(v => `
+          <tr>
+            <td>${v.vehicle_id}</td>
+            <td>${(v.brand || '')} ${(v.model || '')} · ${v.carType || ''}</td>
+            <td>${v.lisenceNum || ''}</td>
+            <td>$${Number(v.dailyPrice || 0).toFixed(2)}</td>
+            <td>${statusPill(v.status)}</td>
+            <td>${verifyPill(v.verificationStatus)}</td>
+            <td>
+              <button class="btn ghost" style="padding:6px 10px;border-radius:10px;" onclick='editVehicle(${JSON.stringify(v).replaceAll("'", "&apos;")})'>編輯</button>
+              <button class="btn ghost" style="padding:6px 10px;border-radius:10px;" onclick="toggleMaintenance(${v.vehicle_id}, '${v.status}')">切換維修</button>
+            </td>
+          </tr>
+        `).join('');
+      } catch (e) {
+        tbody.innerHTML = '<tr><td colspan="7" class="muted">載入失敗</td></tr>';
+        setMsg('vehiclesMsg', false, e.message);
+      }
+    }
+
+    function editVehicle(v) {
+      document.getElementById('vehicle_id').value = v.vehicle_id;
+      document.getElementById('carType').value = v.carType || '';
+      document.getElementById('lisenceNum').value = v.lisenceNum || '';
+      document.getElementById('year').value = v.year || '';
+      document.getElementById('seatNum').value = v.seatNum || '';
+      document.getElementById('brand').value = v.brand || '';
+      document.getElementById('model').value = v.model || '';
+      document.getElementById('location').value = v.location || '';
+      document.getElementById('dailyPrice').value = v.dailyPrice || '';
+      document.getElementById('photoURL').value = v.photoURL || '';
+      document.getElementById('description').value = v.description || '';
+      setMsg('ownerMsg', true, '已載入車輛到表單，可直接修改後按「儲存」。');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function resetForm() {
+      document.getElementById('vehicle_id').value = '';
+      ['carType','lisenceNum','year','seatNum','brand','model','location','dailyPrice','photoURL','description'].forEach(id => {
+        document.getElementById(id).value = '';
+      });
+      setMsg('ownerMsg', true, '');
+    }
+
+    async function saveVehicle() {
+      const userId = getUserId();
+      if (!userId) return setMsg('ownerMsg', false, '找不到 user_id，請先登入。');
+
+      const payload = {
+        carType: document.getElementById('carType').value.trim(),
+        lisenceNum: document.getElementById('lisenceNum').value.trim(),
+        year: parseInt(document.getElementById('year').value),
+        seatNum: parseInt(document.getElementById('seatNum').value),
+        brand: document.getElementById('brand').value.trim(),
+        model: document.getElementById('model').value.trim(),
+        location: document.getElementById('location').value.trim(),
+        dailyPrice: parseFloat(document.getElementById('dailyPrice').value),
+        photoURL: document.getElementById('photoURL').value.trim() || null,
+        description: document.getElementById('description').value.trim() || null,
+      };
+
+      if (!payload.carType || !payload.lisenceNum || !payload.location || !payload.year || !payload.seatNum || isNaN(payload.dailyPrice)) {
+        return setMsg('ownerMsg', false, '請把必填欄位填完整（carType / lisenceNum / year / seatNum / location / dailyPrice）。');
+      }
+
+      const vehicleId = document.getElementById('vehicle_id').value;
+
+      try {
+        let res;
+        if (vehicleId) {
+          res = await fetch(`${API_BASE}/owner/${userId}/vehicles/${vehicleId}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload),
+          });
+        } else {
+          res = await fetch(`${API_BASE}/owner/${userId}/vehicles`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload),
+          });
+        }
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || '儲存失敗');
+        setMsg('ownerMsg', true, vehicleId ? '已更新車輛。' : `已新增車輛 #${data.vehicle_id}（等待審核）。`);
+        resetForm();
+        await loadVehicles();
+      } catch (e) {
+        setMsg('ownerMsg', false, e.message);
+      }
+    }
+
+    async function toggleMaintenance(vehicleId, currentStatus) {
+      const userId = getUserId();
+      if (!userId) return setMsg('vehiclesMsg', false, '找不到 user_id，請先登入。');
+
+      const next = currentStatus === 'maintenance' ? 'available' : 'maintenance';
+      try {
+        const res = await fetch(`${API_BASE}/owner/${userId}/vehicles/${vehicleId}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ status: next }),
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || '更新失敗');
+        setMsg('vehiclesMsg', true, `車輛 #${vehicleId} 狀態已改為 ${next}`);
+        await loadVehicles();
+      } catch (e) {
+        setMsg('vehiclesMsg', false, e.message);
+      }
+    }
+
+    async function loadOwnerRentals() {
+      const userId = getUserId();
+      if (!userId) return setMsg('ownerMsg', false, '找不到 user_id，請先登入。');
+      try {
+        const res = await fetch(`${API_BASE}/owner/${userId}/rentals`);
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || '載入租單失敗');
+        const count = data.length;
+        const paid = data.filter(r => r.paymentStatus === 'paid').length;
+        document.getElementById('ownerStats').textContent = `租單總數：${count}，已付款：${paid}`;
+        setMsg('ownerMsg', true, '已載入租單統計（詳細清單可再加一個表格）。');
+      } catch (e) {
+        setMsg('ownerMsg', false, e.message);
+      }
+    }
+
+    async function loadOwnerRevenue() {
+      const userId = getUserId();
+      if (!userId) return setMsg('ownerMsg', false, '找不到 user_id，請先登入。');
+      try {
+        const res = await fetch(`${API_BASE}/owner/${userId}/revenue?months=6`);
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || '載入收入失敗');
+        const lines = data.map(x => `${x.month}: $${Number(x.total_revenue || 0).toFixed(2)} (${x.order_count} orders)`).join(' | ');
+        document.getElementById('ownerStats').textContent = lines || '目前沒有已付款收入';
+        setMsg('ownerMsg', true, '已載入月收入。');
+      } catch (e) {
+        setMsg('ownerMsg', false, e.message);
+      }
+    }
+
+    window.onload = async () => {
+      await loadVehicles();
+    };
+  </script>
+</body>
+</html>
+

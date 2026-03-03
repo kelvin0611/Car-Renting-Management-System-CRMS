@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>P2P Car Rental - Process Navigation</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    body { font-family: 'Segoe UI', Arial, sans-serif; background: #f7f7f7; margin: 0; padding: 0; }
+    .header {
+      background: #007bff;
+      color: #fff;
+      padding: 24px 0 16px 0;
+      text-align: center;
+      box-shadow: 0 2px 8px #cce;
+      border-bottom-left-radius: 30px;
+      border-bottom-right-radius: 30px;
+    }
+    .header .logo {
+      font-size: 32px;
+      font-weight: bold;
+      letter-spacing: 2px;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+    }
+    .header .subtitle {
+      font-size: 18px;
+      color: #e9ecef;
+      margin-bottom: 0;
+    }
+    .container {
+      max-width: 520px;
+      margin: 30px auto 30px auto;
+      background: #fff;
+      padding: 32px 28px 24px 28px;
+      border-radius: 18px;
+      box-shadow: 0 2px 16px #ddd;
+      position: relative;
+    }
+    .user-info { background: #e9ecef; padding: 15px; border-radius: 7px; margin-bottom: 24px; }
+    .logout-btn { background: #dc3545; color: #fff; padding: 5px 10px; font-size: 14px; border-radius: 4px; border: none; cursor: pointer; }
+    .logout-btn:hover { background: #c82333; }
+    .process-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin: 30px 0 40px 0;
+      padding: 0 10px;
+    }
+    .process-step {
+      flex: 1;
+      text-align: center;
+      position: relative;
+      font-size: 13px;
+      color: #555;
+    }
+    .process-step .icon {
+      display: block;
+      margin: 0 auto 6px auto;
+      font-size: 22px;
+      color: #007bff;
+    }
+    .process-step.active .icon {
+      color: #28a745;
+    }
+    .process-step:not(:last-child)::after {
+      content: '';
+      position: absolute;
+      top: 16px;
+      right: -8px;
+      width: 16px;
+      height: 3px;
+      background: #007bff;
+      border-radius: 2px;
+      z-index: 0;
+    }
+    .step-card {
+      background: #f8f9fa;
+      border-radius: 10px;
+      box-shadow: 0 1px 4px #eee;
+      margin-bottom: 22px;
+      padding: 18px 18px 14px 18px;
+      display: flex;
+      align-items: flex-start;
+      gap: 18px;
+      border-left: 5px solid #007bff;
+      transition: box-shadow 0.2s;
+    }
+    .step-card:hover {
+      box-shadow: 0 4px 16px #e0e0e0;
+      border-left: 5px solid #28a745;
+    }
+    .step-icon {
+      font-size: 32px;
+      color: #007bff;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+    .step-content {
+      flex: 1;
+    }
+    .step-content h2 {
+      margin: 0 0 8px 0;
+      font-size: 19px;
+      color: #222;
+      font-weight: 600;
+      letter-spacing: 1px;
+    }
+    .step-content p {
+      margin: 0 0 12px 0;
+      color: #555;
+      font-size: 15px;
+    }
+    button {
+      padding: 9px 22px;
+      font-size: 15px;
+      border-radius: 5px;
+      border: none;
+      cursor: pointer;
+      font-weight: 500;
+      box-shadow: 0 1px 4px #eee;
+      margin-top: 2px;
+    }
+    .primary-btn { background: #007bff; color: #fff; }
+    .primary-btn:hover { background: #0056b3; }
+    .secondary-btn { background: #6c757d; color: #fff; }
+    .secondary-btn:hover { background: #545b62; }
+    .footer {
+      text-align: center;
+      color: #888;
+      font-size: 13px;
+      padding: 18px 0 10px 0;
+      background: #f8f9fa;
+      border-top: 1px solid #eee;
+      border-bottom-left-radius: 18px;
+      border-bottom-right-radius: 18px;
+      margin-top: 30px;
+    }
+    @media (max-width: 600px) {
+      .container { max-width: 98vw; padding: 10vw 4vw; }
+      .header { padding: 18px 0 10px 0; }
+      .footer { padding: 12px 0 8px 0; }
+      .step-card { flex-direction: column; gap: 8px; }
+      .step-icon { font-size: 28px; }
+    }
+  </style>
+  <!-- 使用 Font Awesome CDN 作為 icon -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+</head>
+<body>
+  <div class="header">
+    <div class="logo">
+      <i class="fa-solid fa-car-side"></i> P2P Car Rental
+    </div>
+    <div class="subtitle">Safe and Convenient Peer-to-Peer Car Rental Platform</div>
+  </div>
+  <div class="container">
+    <div id="userInfo" class="user-info">
+      <p>Loading user information...</p>
+    </div>
+    <div class="process-bar">
+      <div class="process-step active">
+        <span class="icon"><i class="fa-solid fa-user-plus"></i></span>
+        Register
+      </div>
+      <div class="process-step">
+        <span class="icon"><i class="fa-solid fa-search"></i></span>
+        Search
+      </div>
+      <div class="process-step">
+        <span class="icon"><i class="fa-solid fa-calendar-check"></i></span>
+        Book
+      </div>
+      <div class="process-step">
+        <span class="icon"><i class="fa-solid fa-credit-card"></i></span>
+        Payment
+      </div>
+      <div class="process-step">
+        <span class="icon"><i class="fa-solid fa-car"></i></span>
+        Return
+      </div>
+    </div>
+    <div id="processSteps">
+      <div class="step-card">
+        <div class="step-icon"><i class="fa-solid fa-user-plus"></i></div>
+        <div class="step-content">
+          <h2>1. Register Account</h2>
+          <p>Fill in your personal information to become a platform user.</p>
+          <button class="primary-btn" onclick="location.href='register.html'">Register Now</button>
+        </div>
+      </div>
+      <div class="step-card">
+        <div class="step-icon"><i class="fa-solid fa-search"></i></div>
+        <div class="step-content">
+          <h2>2. Search Vehicles</h2>
+          <p>Filter available vehicles by type, price, and other criteria.</p>
+          <button class="primary-btn" onclick="location.href='search.html'">Search Vehicles</button>
+        </div>
+      </div>
+      <div class="step-card">
+        <div class="step-icon"><i class="fa-solid fa-calendar-check"></i></div>
+        <div class="step-content">
+          <h2>3. Confirm Booking</h2>
+          <p>Select your preferred vehicle, choose rental dates, and submit your order.</p>
+          <button class="primary-btn" onclick="location.href='rent.html'">Book Now</button>
+        </div>
+      </div>
+      <div class="step-card">
+        <div class="step-icon"><i class="fa-solid fa-credit-card"></i></div>
+        <div class="step-content">
+          <h2>4. Payment</h2>
+          <p>Fill in payment information and complete your order payment.</p>
+          <button class="primary-btn" onclick="location.href='pay.html'">Make Payment</button>
+        </div>
+      </div>
+      <div class="step-card">
+        <div class="step-icon"><i class="fa-solid fa-car"></i></div>
+        <div class="step-content">
+          <h2>5. Return Vehicle</h2>
+          <p>Return the vehicle after the rental period to complete the process.</p>
+          <button class="primary-btn" onclick="location.href='return.html'">Return Vehicle</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="footer">
+    &copy; 2024 P2P Car Rental | Safe Peer-to-Peer Car Rental Platform | <a href="mailto:support@p2pcarrental.com" style="color:#007bff;text-decoration:none;">Contact Us</a>
+  </div>
+  <script src="config.js"></script>
+  <script>
+    // Check user login status when page loads
+    window.onload = function() {
+      const userId = localStorage.getItem('user_id');
+      const userInfoDiv = document.getElementById('userInfo');
+      
+      if (userId) {
+        // User is logged in, display user info and logout button
+        fetch(`${API_BASE}/user/${userId}`)
+          .then(response => response.json())
+          .then(user => {
+            if (user.user_id) {
+              userInfoDiv.innerHTML = `
+                <p><strong>Welcome back!</strong></p>
+                <p>User ID: ${user.user_id} | Name: ${user.name} | Type: ${user.userType === 'renter' ? 'Renter' : 'Owner'}</p>
+                <button class="logout-btn" onclick="logout()">Logout</button>
+              `;
+            } else {
+              showNotLoggedIn();
+            }
+          })
+          .catch(error => {
+            console.error('Error fetching user info:', error);
+            showNotLoggedIn();
+          });
+      } else {
+        showNotLoggedIn();
+      }
+    };
+
+    function showNotLoggedIn() {
+      const userInfoDiv = document.getElementById('userInfo');
+      userInfoDiv.innerHTML = `
+        <p>You are not logged in</p>
+        <button class="primary-btn" onclick="location.href='login.html'">Login Now</button>
+        <button class="secondary-btn" onclick="location.href='register.html'">Create Account</button>
+      `;
+    }
+
+    function logout() {
+      localStorage.removeItem('user_id');
+      localStorage.removeItem('renter_id');
+      alert('You have been logged out');
+      location.reload(); 
+    }
+  </script>
+</body>
+</html>

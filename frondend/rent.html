@@ -1,0 +1,702 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Rent Vehicle</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    body { 
+      font-family: 'Segoe UI', Arial, sans-serif; 
+      margin: 0; 
+      background-color: #f5f5f5;
+    }
+    .navbar {
+      background: #fff;
+      box-shadow: 0 2px 8px #e0e0e0;
+      padding: 0 32px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 64px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .navbar .brand {
+      display: flex;
+      align-items: center;
+      font-size: 26px;
+      font-weight: bold;
+      color: #007bff;
+      letter-spacing: 1px;
+    }
+    .navbar .brand i {
+      margin-right: 10px;
+      font-size: 28px;
+    }
+    .navbar .menu {
+      display: flex;
+      gap: 28px;
+    }
+    .navbar .menu a {
+      color: #333;
+      text-decoration: none;
+      font-size: 16px;
+      font-weight: 500;
+      transition: color 0.2s;
+    }
+    .navbar .menu a:hover {
+      color: #007bff;
+    }
+    .navbar .user-status {
+      font-size: 15px;
+      color: #555;
+    }
+    .navbar .user-status .login-btn {
+      background: #007bff;
+      color: #fff;
+      border: none;
+      border-radius: 4px;
+      padding: 5px 14px;
+      margin-left: 10px;
+      cursor: pointer;
+      font-size: 15px;
+    }
+    .navbar .user-status .login-btn:hover {
+      background: #0056b3;
+    }
+
+    .main-layout {
+      max-width: 900px;
+      margin: 32px auto 0 auto;
+      padding: 0 18px 32px 18px;
+    }
+    .rent-hero {
+      background: linear-gradient(90deg, #007bff 0%, #00c6ff 100%);
+      color: #fff;
+      border-radius: 12px;
+      padding: 38px 32px 28px 32px;
+      margin-bottom: 30px;
+      box-shadow: 0 2px 12px #e0e0e0;
+      text-align: center;
+    }
+    .rent-hero h2 {
+      margin: 0 0 10px 0;
+      font-size: 32px;
+      font-weight: 700;
+      letter-spacing: 1px;
+    }
+    .rent-hero p {
+      margin: 0 0 8px 0;
+      font-size: 17px;
+      color: #e9ecef;
+    }
+    .container {
+      background: white;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      margin-bottom: 30px;
+    }
+    .vehicle-info {
+      background: #f8f9fa;
+      padding: 20px;
+      border-radius: 8px;
+      margin-bottom: 30px;
+      border-left: 4px solid #007bff;
+    }
+    .insurance-info {
+      background: #e9ecef;
+      padding: 15px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      border-left: 4px solid #28a745;
+    }
+    .rental-form {
+      margin-top: 30px;
+    }
+    .form-group {
+      margin-bottom: 20px;
+    }
+    label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: bold;
+      color: #555;
+    }
+    input, select, button {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      box-sizing: border-box;
+    }
+    button {
+      background-color: #28a745;
+      color: white;
+      border: none;
+      cursor: pointer;
+      font-size: 16px;
+      font-weight: bold;
+      transition: background-color 0.3s;
+      margin-top: 10px;
+    }
+    button:hover {
+      background-color: #218838;
+    }
+    .back-btn {
+      background-color: #6c757d;
+    }
+    .back-btn:hover {
+      background-color: #545b62;
+    }
+    .calculation {
+      background: #e9ecef;
+      padding: 15px;
+      border-radius: 5px;
+      margin: 20px 0;
+    }
+    .calculation-item {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 10px;
+    }
+    .calculation-total {
+      font-weight: bold;
+      font-size: 18px;
+      color: #dc3545;
+      border-top: 1px solid #ccc;
+      padding-top: 10px;
+    }
+    .error {
+      color: #dc3545;
+      background-color: #f8d7da;
+      padding: 15px;
+      border-radius: 5px;
+      margin: 15px 0;
+    }
+    .success {
+      color: #155724;
+      background-color: #d4edda;
+      padding: 15px;
+      border-radius: 5px;
+      margin: 15px 0;
+    }
+    .loading {
+      color: #0c5460;
+      background-color: #d1ecf1;
+      padding: 15px;
+      border-radius: 5px;
+      margin: 15px 0;
+    }
+    .hidden {
+      display: none;
+    }
+    .detail-item {
+      margin-bottom: 10px;
+    }
+    .detail-label {
+      font-weight: bold;
+      color: #555;
+    }
+    .info-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 15px;
+      margin-top: 15px;
+    }
+    .footer {
+      background: #222;
+      color: #eee;
+      text-align: center;
+      padding: 28px 0 18px 0;
+      font-size: 15px;
+      margin-top: 0;
+      border-top-left-radius: 18px;
+      border-top-right-radius: 18px;
+    }
+    .footer a { color: #00c6ff; text-decoration: none; }
+    .footer a:hover { text-decoration: underline; }
+    @media (max-width: 900px) {
+      .main-layout { max-width: 100vw; }
+      .container { padding: 4vw 2vw; }
+      .rent-hero { padding: 24px 8px 18px 8px; }
+    }
+  </style>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+</head>
+<body>
+  <div class="navbar">
+    <div class="brand">
+      <i class="fa-solid fa-car-side"></i> P2P Car Rental
+    </div>
+    <div class="menu">
+      <a href="index.html">Home</a>
+      <a href="search.html">Search</a>
+      <a href="rent.html">Rent</a>
+      <a href="pay.html">Payment</a>
+      <a href="return.html">Return</a>
+    </div>
+    <div class="user-status" id="userStatus">
+      <!-- User status will be dynamically filled by JS -->
+    </div>
+  </div>
+  <div class="main-layout">
+    <div class="rent-hero">
+      <h2><i class="fa-solid fa-calendar-check"></i> Rent Vehicle</h2>
+      <p>Complete your rental information and confirm your order for a convenient P2P car rental experience.</p>
+    </div>
+    <div class="container">
+      <!-- Back to Home button -->
+      <div style="margin-bottom: 20px;">
+        <button class="back-btn" onclick="goToHomePage()" style="padding: 8px 15px;">
+          ← Back to Home
+        </button>
+      </div>
+      
+      <!-- Vehicle information display -->
+      <div id="vehicleInfo" class="vehicle-info">
+        <h3>Loading vehicle information...</h3>
+      </div>
+
+      <!-- Insurance information display -->
+      <div id="insuranceInfo" class="insurance-info hidden">
+        <h4>Insurance Plan</h4>
+        <div id="insuranceDetails">
+          <!-- Insurance details will be generated dynamically by JavaScript -->
+        </div>
+      </div>
+
+      <div id="errorMessage" class="error hidden"></div>
+      <div id="successMessage" class="success hidden"></div>
+
+      <!-- Rental form -->
+      <form id="rentalForm" class="rental-form">
+        <div class="form-group">
+          <label for="rentalStartTime">Rental Start Time:</label>
+          <input type="datetime-local" id="rentalStartTime" name="rentalStartTime" required>
+        </div>
+        
+        <div class="form-group">
+          <label for="rentalEndTime">Rental End Time:</label>
+          <input type="datetime-local" id="rentalEndTime" name="rentalEndTime" required>
+        </div>
+        
+        <div class="form-group">
+          <label for="pickupLocation">Pickup Location:</label>
+          <input type="text" id="pickupLocation" name="pickupLocation" placeholder="Enter pickup location" required>
+        </div>
+        
+        <div class="form-group">
+          <label for="dropoffLocation">Drop-off Location:</label>
+          <input type="text" id="dropoffLocation" name="dropoffLocation" placeholder="Enter drop-off location" required>
+        </div>
+
+        <div id="calculationInfo" class="calculation hidden">
+          <h4>Cost Calculation</h4>
+          <div class="calculation-item">
+            <span>Rental Days:</span>
+            <span id="rentalDays">0</span>
+          </div>
+          <div class="calculation-item">
+            <span>Daily Price:</span>
+            <span id="dailyPrice">$0</span>
+          </div>
+          <div class="calculation-item">
+            <span>Vehicle Rental:</span>
+            <span id="baseAmount">$0</span>
+          </div>
+          <div class="calculation-item" id="insuranceItem" style="display: none;">
+            <span>Insurance Fee:</span>
+            <span id="insuranceAmount">$0</span>
+          </div>
+          <div class="calculation-item calculation-total">
+            <span>Total Amount:</span>
+            <span id="totalAmount">$0</span>
+          </div>
+        </div>
+
+        <button type="submit">Confirm Rental</button>
+        <button type="button" class="back-btn" onclick="goBackToInsurance()">Back to Insurance Selection</button>
+      </form>
+    </div>
+  </div>
+  <div class="footer">
+    &copy; 2024 P2P Car Rental | Secure Peer-to-Peer Car Rental Platform | <a href="mailto:support@p2pcarrental.com">Contact Us</a>
+  </div>
+  <script src="config.js"></script>
+  <script>
+    let vehicleData = null;
+    let dailyPrice = 0;
+    let insuranceData = null;
+    let insuranceFee = 0;
+
+    // Initialize on page load
+    window.onload = function() {
+      // User status bar
+      const userStatusDiv = document.getElementById('userStatus');
+      const userId = localStorage.getItem('user_id');
+      if (userId) {
+        userStatusDiv.innerHTML = `<span>Welcome, User #${userId}</span> <button class="login-btn" onclick="logout()">Logout</button>`;
+      } else {
+        userStatusDiv.innerHTML = `<button class="login-btn" onclick="window.location.href='login.html'">Login</button>`;
+      }
+      
+      // Get selected vehicle ID and insurance ID
+      const selectedVehicleId = localStorage.getItem('selected_vehicle_id');
+      const selectedInsuranceId = localStorage.getItem('selected_insurance_id');
+      
+      if (!selectedVehicleId) {
+        showError('No vehicle selected. Please return to the search page to select a vehicle.');
+        document.getElementById('rentalForm').style.display = 'none';
+        return;
+      }
+      
+      // Load vehicle information
+      loadVehicleInfo(selectedVehicleId);
+      
+      // Load insurance information (if insurance was selected)
+      if (selectedInsuranceId && selectedInsuranceId !== 'null') {
+        loadInsuranceInfo(selectedInsuranceId);
+      } else {
+        // No insurance selected, hide insurance info area
+        document.getElementById('insuranceInfo').classList.add('hidden');
+      }
+      
+      // Set minimum date inputs to today
+      const today = new Date().toISOString().slice(0, 16);
+      document.getElementById('rentalStartTime').min = today;
+      document.getElementById('rentalEndTime').min = today;
+      
+      // Set default times (starting tomorrow, ending the day after)
+      setupDefaultTimes();
+      
+      // Add date change listeners
+      document.getElementById('rentalStartTime').addEventListener('change', calculateRental);
+      document.getElementById('rentalEndTime').addEventListener('change', calculateRental);
+      
+      // Set form submission event
+      document.getElementById('rentalForm').onsubmit = handleRentalSubmit;
+    };
+
+    function logout() {
+      localStorage.removeItem('user_id');
+      localStorage.removeItem('renter_id');
+      alert('Logged out successfully');
+      location.reload();
+    }
+
+    // Load vehicle information
+    async function loadVehicleInfo(vehicleId) {
+      try {
+        const response = await fetch(`${API_BASE}/vehicles/${vehicleId}`);
+        
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        vehicleData = await response.json();
+        displayVehicleInfo(vehicleData);
+        
+        dailyPrice = parseFloat(vehicleData.dailyPrice);
+        
+        // Set default pickup location to vehicle location
+        if (vehicleData.location) {
+          document.getElementById('pickupLocation').value = vehicleData.location;
+        }
+        
+      } catch (error) {
+        showError(`Failed to load vehicle information: ${error.message}`);
+      }
+    }
+
+    // Load insurance information
+    async function loadInsuranceInfo(insuranceId) {
+      try {
+        const response = await fetch(`${API_BASE}/insurances/${insuranceId}`);
+        
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        insuranceData = await response.json();
+        insuranceFee = parseFloat(insuranceData.fee);
+        
+        displayInsuranceInfo(insuranceData);
+        
+      } catch (error) {
+        // Don't show error since insurance is not mandatory
+      }
+    }
+
+    // Display vehicle information
+    function displayVehicleInfo(vehicle) {
+      const vehicleInfoDiv = document.getElementById('vehicleInfo');
+      
+      vehicleInfoDiv.innerHTML = `
+        <h3>${vehicle.carType} - ${vehicle.brand || ''} ${vehicle.model || ''}</h3>
+        <div class="info-grid">
+          <div class="detail-item">
+            <span class="detail-label">Year:</span>
+            <span>${vehicle.year || 'Unknown'}</span>
+          </div>
+          <div class="detail-item">
+            <span class="detail-label">Seats:</span>
+            <span>${vehicle.seatNum || 'Unknown'} seats</span>
+          </div>
+          <div class="detail-item">
+            <span class="detail-label">Daily Price:</span>
+            <span>$${vehicle.dailyPrice}</span>
+          </div>
+          <div class="detail-item">
+            <span class="detail-label">Location:</span>
+            <span>${vehicle.location || 'Unknown'}</span>
+          </div>
+          <div class="detail-item">
+            <span class="detail-label">Status:</span>
+            <span style="color: ${vehicle.status === 'available' ? 'green' : 'red'}">
+              ${vehicle.status === 'available' ? 'Available' : 'Unavailable'}
+            </span>
+          </div>
+        </div>
+        ${vehicle.description ? `<p><strong>Description:</strong> ${vehicle.description}</p>` : ''}
+      `;
+      
+      // If vehicle is unavailable, disable the form
+      if (vehicle.status !== 'available') {
+        showError('This vehicle is currently unavailable. Please select another vehicle.');
+        document.getElementById('rentalForm').style.display = 'none';
+      }
+    }
+
+    // Display insurance information
+    function displayInsuranceInfo(insurance) {
+      const insuranceInfoDiv = document.getElementById('insuranceInfo');
+      const insuranceDetailsDiv = document.getElementById('insuranceDetails');
+      
+      insuranceDetailsDiv.innerHTML = `
+        <div class="detail-item">
+          <span class="detail-label">Insurance Type:</span>
+          <span>${insurance.types}</span>
+        </div>
+        <div class="detail-item">
+          <span class="detail-label">Insurance Fee:</span>
+          <span>$${insurance.fee}</span>
+        </div>
+        <div class="detail-item">
+          <span class="detail-label">Validity Period:</span>
+          <span>${insurance.validityPeriod}</span>
+        </div>
+        <div class="detail-item">
+          <span class="detail-label">Insurance Company:</span>
+          <span>${insurance.company}</span>
+        </div>
+        ${insurance.description ? `
+        <div class="detail-item">
+          <span class="detail-label">Coverage:</span>
+          <span>${insurance.description}</span>
+        </div>` : ''}
+      `;
+      
+      insuranceInfoDiv.classList.remove('hidden');
+    }
+
+    // Set default times
+    function setupDefaultTimes() {
+      const tomorrow = new Date();
+      tomorrow.setDate(tomorrow.getDate() + 1);
+      tomorrow.setHours(10, 0, 0, 0);
+      
+      const dayAfterTomorrow = new Date(tomorrow);
+      dayAfterTomorrow.setDate(dayAfterTomorrow.getDate() + 1);
+      dayAfterTomorrow.setHours(18, 0, 0, 0);
+      
+      const formatDateTime = (date) => {
+        return date.toISOString().slice(0, 16);
+      };
+      
+      document.getElementById('rentalStartTime').value = formatDateTime(tomorrow);
+      document.getElementById('rentalEndTime').value = formatDateTime(dayAfterTomorrow);
+      
+      // Trigger cost calculation
+      setTimeout(calculateRental, 100);
+    }
+
+    // Calculate rental cost
+    function calculateRental() {
+      const startTime = document.getElementById('rentalStartTime').value;
+      const endTime = document.getElementById('rentalEndTime').value;
+      
+      if (!startTime || !endTime) {
+        return;
+      }
+      
+      const startDate = new Date(startTime);
+      const endDate = new Date(endTime);
+      
+      // Validate that end time is after start time
+      if (endDate <= startDate) {
+        showError('End time must be after start time');
+        document.getElementById('calculationInfo').classList.add('hidden');
+        return;
+      }
+      
+      // Calculate rental days (minimum 1 day)
+      const timeDiff = endDate - startDate;
+      const rentalDays = Math.ceil(timeDiff / (1000 * 60 * 60 * 24));
+      
+      if (rentalDays < 1) {
+        showError('Rental period must be at least 1 day');
+        document.getElementById('calculationInfo').classList.add('hidden');
+        return;
+      }
+      
+      // Calculate base amount
+      const baseAmount = rentalDays * dailyPrice;
+      
+      // Calculate total amount (including insurance)
+      const totalAmount = baseAmount + insuranceFee;
+      
+      // Display calculation results
+      document.getElementById('rentalDays').textContent = rentalDays;
+      document.getElementById('dailyPrice').textContent = `$${dailyPrice}`;
+      document.getElementById('baseAmount').textContent = `$${baseAmount.toFixed(2)}`;
+      
+      if (insuranceFee > 0) {
+        document.getElementById('insuranceItem').style.display = 'flex';
+        document.getElementById('insuranceAmount').textContent = `$${insuranceFee.toFixed(2)}`;
+      } else {
+        document.getElementById('insuranceItem').style.display = 'none';
+      }
+      
+      document.getElementById('totalAmount').textContent = `$${totalAmount.toFixed(2)}`;
+      document.getElementById('calculationInfo').classList.remove('hidden');
+      
+      // Clear error message
+      document.getElementById('errorMessage').classList.add('hidden');
+      
+      // Save total amount to localStorage for payment page
+      localStorage.setItem('rental_amount', totalAmount);
+    }
+
+    // Handle rental form submission
+    async function handleRentalSubmit(e) {
+      e.preventDefault();
+      
+      const startTime = document.getElementById('rentalStartTime').value;
+      const endTime = document.getElementById('rentalEndTime').value;
+      
+      if (!startTime || !endTime) {
+        showError('Please complete rental time information');
+        return;
+      }
+      
+      const startDate = new Date(startTime);
+      const endDate = new Date(endTime);
+      
+      if (endDate <= startDate) {
+        showError('End time must be after start time');
+        return;
+      }
+      
+      // Get user ID (assuming user is logged in)
+      const userId = localStorage.getItem('user_id');
+      
+      if (!userId) {
+        showError('User not logged in. Please log in first.');
+        return;
+      }
+      
+      // Calculate total amount
+      const timeDiff = endDate - startDate;
+      const rentalDays = Math.ceil(timeDiff / (1000 * 60 * 60 * 24));
+      const baseAmount = rentalDays * dailyPrice;
+      const totalAmount = baseAmount + insuranceFee;
+      
+      try {
+        // Show loading state
+        document.getElementById('rentalForm').querySelector('button[type="submit"]').textContent = 'Processing...';
+        document.getElementById('rentalForm').querySelector('button[type="submit"]').disabled = true;
+        
+        // Get insurance ID
+        const insuranceId = localStorage.getItem('selected_insurance_id');
+        
+        // Create rental order - using user_id instead of renter_id
+        const response = await fetch(`${API_BASE}/rent`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                vehicle_id: parseInt(localStorage.getItem('selected_vehicle_id')),
+                user_id: parseInt(userId),  // Changed to user_id
+                insurance_id: insuranceId !== 'null' ? parseInt(insuranceId) : null,
+                rentalStartTime: startTime,
+                rentalEndTime: endTime,
+                pickupLocation: document.getElementById('pickupLocation').value,
+                dropoffLocation: document.getElementById('dropoffLocation').value,
+                totalAmount: totalAmount
+            })
+        });
+        
+        const data = await response.json();
+        
+        if (!response.ok) {
+          throw new Error(data.error || data.msg || 'Failed to create rental order');
+        }
+        
+        showSuccess('Rental order created successfully! Redirecting to payment page...');
+        
+        // Save rental information to localStorage for payment page
+        localStorage.setItem('rental_id', data.rental_id);
+        localStorage.setItem('rental_amount', totalAmount);
+        
+        // Save vehicle information to localStorage for payment page
+        localStorage.setItem('selected_vehicle_info', JSON.stringify(vehicleData));
+        
+        // Redirect to payment page
+        setTimeout(() => {
+          window.location.href = 'pay.html';
+        }, 2000);
+        
+      } catch (error) {
+        showError(`Failed to create rental order: ${error.message}`);
+        
+        // Restore button state
+        document.getElementById('rentalForm').querySelector('button[type="submit"]').textContent = 'Confirm Rental';
+        document.getElementById('rentalForm').querySelector('button[type="submit"]').disabled = false;
+      }
+    }
+
+    // Show error message
+    function showError(message) {
+      const errorDiv = document.getElementById('errorMessage');
+      errorDiv.textContent = message;
+      errorDiv.classList.remove('hidden');
+      
+      // Hide other messages
+      document.getElementById('successMessage').classList.add('hidden');
+    }
+
+    // Show success message
+    function showSuccess(message) {
+      const successDiv = document.getElementById('successMessage');
+      successDiv.textContent = message;
+      successDiv.classList.remove('hidden');
+      
+      // Hide other messages
+      document.getElementById('errorMessage').classList.add('hidden');
+    }
+
+    // Go back to insurance selection page
+    function goBackToInsurance() {
+      window.location.href = 'insurance.html';
+    }
+
+    // Go back to home page
+    function goToHomePage() {
+      window.location.href = 'index.html';
+    }
+  </script>
+</body>
+</html>

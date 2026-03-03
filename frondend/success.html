@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Payment Successful</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    
+    body {
+      background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+    
+    .container {
+      max-width: 800px;
+      width: 100%;
+      background: white;
+      border-radius: 15px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+      overflow: hidden;
+    }
+    
+    .header {
+      background: linear-gradient(135deg, #4CAF50 0%, #2E7D32 100%);
+      color: white;
+      padding: 30px;
+      text-align: center;
+    }
+    
+    .header h1 {
+      font-size: 2.5rem;
+      margin-bottom: 10px;
+    }
+    
+    .header p {
+      font-size: 1.2rem;
+      opacity: 0.9;
+    }
+    
+    .success-icon {
+      font-size: 5rem;
+      margin-bottom: 20px;
+    }
+    
+    .content {
+      padding: 30px;
+    }
+    
+    .order-summary {
+      background: #f8f9fa;
+      border-radius: 10px;
+      padding: 25px;
+      margin-bottom: 30px;
+    }
+    
+    .order-summary h2 {
+      color: #2E7D32;
+      margin-bottom: 20px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid #e0e0e0;
+    }
+    
+    .order-details {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 15px;
+    }
+    
+    .detail-item {
+      margin-bottom: 15px;
+    }
+    
+    .detail-label {
+      font-weight: 600;
+      color: #555;
+      margin-bottom: 5px;
+    }
+    
+    .detail-value {
+      font-size: 1.1rem;
+      color: #333;
+    }
+    
+    .next-steps {
+      background: #e8f5e9;
+      border-radius: 10px;
+      padding: 25px;
+      margin-bottom: 30px;
+    }
+    
+    .next-steps h2 {
+      color: #2E7D32;
+      margin-bottom: 15px;
+    }
+    
+    .next-steps ul {
+      padding-left: 20px;
+    }
+    
+    .next-steps li {
+      margin-bottom: 10px;
+      line-height: 1.5;
+    }
+    
+    .actions {
+      text-align: center;
+      padding: 20px 0;
+    }
+    
+    .btn {
+      display: inline-block;
+      background: #4CAF50;
+      color: white;
+      padding: 14px 30px;
+      font-size: 1.1rem;
+      font-weight: 600;
+      border: none;
+      border-radius: 50px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-decoration: none;
+      box-shadow: 0 4px 15px rgba(76, 175, 80, 0.3);
+    }
+    
+    .btn:hover {
+      background: #388E3C;
+      transform: translateY(-3px);
+      box-shadow: 0 7px 20px rgba(76, 175, 80, 0.4);
+    }
+    
+    .footer {
+      text-align: center;
+      padding: 20px;
+      color: #777;
+      font-size: 0.9rem;
+      border-top: 1px solid #eee;
+    }
+    
+    @media (max-width: 768px) {
+      .order-details {
+        grid-template-columns: 1fr;
+      }
+      
+      .header h1 {
+        font-size: 2rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <div class="success-icon">✓</div>
+      <h1>Payment Successful!</h1>
+      <p>Your order has been confirmed. Thank you for using our car rental service.</p>
+    </div>
+    
+    <div class="content">
+      <div class="order-summary">
+        <h2>Order Details</h2>
+        <div class="order-details">
+          <div class="detail-item">
+            <div class="detail-label">Order Number</div>
+            <div class="detail-value" id="order-id">#P2P-2023-00125</div>
+          </div>
+          <div class="detail-item">
+            <div class="detail-label">Payment Amount</div>
+            <div class="detail-value" id="payment-amount">$120.00</div>
+          </div>
+          <div class="detail-item">
+            <div class="detail-label">Payment Method</div>
+            <div class="detail-value" id="payment-method">Credit Card</div>
+          </div>
+          <div class="detail-item">
+            <div class="detail-label">Transaction Time</div>
+            <div class="detail-value" id="payment-time">2023-11-13 15:30:22</div>
+          </div>
+          <div class="detail-item">
+            <div class="detail-label">Rental Vehicle</div>
+            <div class="detail-value" id="vehicle-info">Toyota Camry 2022</div>
+          </div>
+          <div class="detail-item">
+            <div class="detail-label">Rental Period</div>
+            <div class="detail-value" id="rental-period">2023-11-15 to 2023-11-17</div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="next-steps">
+        <h2>What's Next</h2>
+        <ul>
+          <li>You will receive detailed pickup location information 24 hours before your rental starts</li>
+          <li>Please bring valid ID and driver's license when picking up the vehicle</li>
+          <li>Carefully inspect the vehicle condition at pickup and contact customer service if you notice any issues</li>
+          <li>If you need to modify or cancel your order, please do so at least 24 hours before the rental start time</li>
+        </ul>
+      </div>
+      
+      <div class="actions">
+        <a href="index.html" class="btn">Return to Home</a>
+      </div>
+    </div>
+    
+    <div class="footer">
+      <p>If you have any questions, please contact customer service: service@p2pcarrental.com | 400-123-4567</p>
+    </div>
+  </div>
+
+  <script>
+    // Get order information from localStorage and display it
+    document.addEventListener('DOMContentLoaded', function() {
+      const rentalId = localStorage.getItem('rental_id');
+      const rentalAmount = localStorage.getItem('rental_amount');
+      const paymentMethod = localStorage.getItem('payment_method') || 'Credit Card';
+      const vehicleInfo = localStorage.getItem('vehicle_info') || 'Toyota Camry 2022';
+      const rentalPeriod = localStorage.getItem('rental_period') || '2023-11-15 to 2023-11-17';
+      
+      // Set current time
+      const now = new Date();
+      const paymentTime = now.toLocaleString('en-US');
+      
+      // Update page information
+      if (rentalId) {
+        document.getElementById('order-id').textContent = `#P2P-${now.getFullYear()}-${rentalId.toString().padStart(5, '0')}`;
+      }
+      
+      if (rentalAmount) {
+        document.getElementById('payment-amount').textContent = `$${rentalAmount}`;
+      }
+      
+      document.getElementById('payment-method').textContent = paymentMethod;
+      document.getElementById('payment-time').textContent = paymentTime;
+      document.getElementById('vehicle-info').textContent = vehicleInfo;
+      document.getElementById('rental-period').textContent = rentalPeriod;
+    });
+  </script>
+</body>
+</html>

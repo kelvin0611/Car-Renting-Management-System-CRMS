@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Login - P2P Car Rental</title>
+  <style>
+    body { 
+      font-family: 'Segoe UI', Arial, sans-serif; 
+      margin: 0;
+      padding: 0;
+      background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    
+    .container {
+      max-width: 400px;
+      width: 90%;
+      margin: 20px auto;
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+      overflow: hidden;
+    }
+    
+    .header {
+      background: linear-gradient(135deg, #3498db, #2c3e50);
+      color: white;
+      padding: 30px 20px;
+      text-align: center;
+    }
+    
+    .header h2 {
+      margin: 0;
+      font-size: 28px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+    }
+    
+    .header p {
+      margin: 10px 0 0 0;
+      opacity: 0.9;
+      font-size: 16px;
+    }
+    
+    .form-container {
+      padding: 30px;
+    }
+    
+    form {
+      margin-bottom: 20px;
+    }
+    
+    .form-group {
+      margin-bottom: 20px;
+    }
+    
+    label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 500;
+      color: #2c3e50;
+    }
+    
+    input {
+      width: 100%;
+      padding: 14px;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      font-size: 16px;
+      box-sizing: border-box;
+      transition: border 0.3s;
+    }
+    
+    input:focus {
+      border-color: #3498db;
+      outline: none;
+      box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+    }
+    
+    button {
+      width: 100%;
+      background: #3498db;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      padding: 14px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.3s;
+      margin-top: 10px;
+    }
+    
+    button:hover {
+      background: #2980b9;
+    }
+    
+    .register-link {
+      text-align: center;
+      margin-top: 20px;
+      color: #555;
+    }
+    
+    .register-link a {
+      color: #3498db;
+      text-decoration: none;
+      font-weight: 500;
+    }
+    
+    .register-link a:hover {
+      text-decoration: underline;
+    }
+    
+    .message {
+      padding: 12px;
+      border-radius: 6px;
+      margin-top: 20px;
+      text-align: center;
+      font-weight: 500;
+    }
+    
+    .error {
+      background: #ffebee;
+      color: #c62828;
+      border: 1px solid #ffcdd2;
+    }
+    
+    .success {
+      background: #e8f5e9;
+      color: #2e7d32;
+      border: 1px solid #c8e6c9;
+    }
+    
+    .info {
+      background: #e3f2fd;
+      color: #1565c0;
+      border: 1px solid #bbdefb;
+    }
+    
+    .footer {
+      text-align: center;
+      padding: 20px;
+      color: #7f8c8d;
+      font-size: 14px;
+      border-top: 1px solid #eee;
+    }
+    
+    @media (max-width: 480px) {
+      .container {
+        width: 95%;
+        margin: 10px auto;
+      }
+      
+      .form-container {
+        padding: 20px;
+      }
+    }
+  </style>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h2><i class="fa-solid fa-car-side"></i> P2P Car Rental</h2>
+      <p>Login to your account</p>
+    </div>
+    
+    <div class="form-container">
+      <form id="loginForm">
+        <div class="form-group">
+          <label for="email">Email Address</label>
+          <input type="email" id="email" name="gmail" placeholder="Enter your email address" required>
+        </div>
+        
+        <div class="form-group">
+          <label for="password">Password</label>
+          <input type="password" id="password" name="password" placeholder="Enter your password" required>
+        </div>
+        
+        <button type="submit">
+          <i class="fa-solid fa-right-to-bracket"></i> Sign In
+        </button>
+      </form>
+      
+      <div class="register-link">
+        Don't have an account? <a href="register.html">Register now</a>
+      </div>
+      
+      <div id="message"></div>
+    </div>
+    
+    <div class="footer">
+      &copy; 2024 P2P Car Rental Platform. All rights reserved.
+    </div>
+  </div>
+
+  <script src="config.js"></script>
+  <script>
+    document.getElementById('loginForm').onsubmit = async function(e) {
+      e.preventDefault();
+      const messageDiv = document.getElementById('message');
+      messageDiv.innerHTML = '<div class="message info"><i class="fa-solid fa-spinner fa-spin"></i> Signing in...</div>';
+      
+      try {
+        const gmail = this.gmail.value;
+        const password = this.password.value;
+        
+        const response = await fetch(`${API_BASE}/login`, {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({ gmail, password })
+        });
+        
+        const data = await response.json();
+        
+        if (!response.ok) {
+          throw new Error(data.error || 'Login failed');
+        }
+        
+        // Login successful
+        localStorage.setItem('user_id', data.user_id);
+        localStorage.setItem('user_name', data.user_id); // In a real app, you'd get the actual name
+        localStorage.setItem('user_type', data.userType);
+        
+        messageDiv.innerHTML = '<div class="message success"><i class="fa-solid fa-check-circle"></i> Login successful! Redirecting...</div>';
+        
+        setTimeout(() => {
+          window.location.href = 'index.html';
+        }, 1500);
+        
+      } catch (error) {
+        messageDiv.innerHTML = `<div class="message error"><i class="fa-solid fa-exclamation-circle"></i> Login failed: ${error.message}</div>`;
+      }
+    };
+
+    // Redirect if already logged in
+    window.onload = function() {
+      const userId = localStorage.getItem('user_id');
+      if (userId) {
+        window.location.href = 'index.html';
+      }
+    };
+  </script>
+</body>
+</html>

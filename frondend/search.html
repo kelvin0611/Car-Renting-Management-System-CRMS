@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Search Vehicles - P2P Car Rental</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        body { 
+            font-family: 'Segoe UI', Arial, sans-serif; 
+            margin: 0; 
+            background: #f8f9fa; 
+            color: #333;
+        }
+        
+        .navbar {
+            background: #fff;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            padding: 0 32px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 70px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .navbar .brand {
+            display: flex;
+            align-items: center;
+            font-size: 26px;
+            font-weight: bold;
+            color: #3498db;
+            letter-spacing: 1px;
+        }
+        
+        .navbar .brand i {
+            margin-right: 10px;
+            font-size: 28px;
+        }
+        
+        .navbar .menu {
+            display: flex;
+            gap: 28px;
+        }
+        
+        .navbar .menu a {
+            color: #333;
+            text-decoration: none;
+            font-size: 16px;
+            font-weight: 500;
+            transition: color 0.2s;
+            padding: 8px 12px;
+            border-radius: 4px;
+        }
+        
+        .navbar .menu a:hover {
+            color: #3498db;
+            background: #f8f9fa;
+        }
+        
+        .navbar .user-status {
+            font-size: 15px;
+            color: #555;
+        }
+        
+        .navbar .user-status .login-btn {
+            background: #3498db;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            padding: 8px 16px;
+            cursor: pointer;
+            font-size: 15px;
+            transition: background 0.3s;
+        }
+        
+        .navbar .user-status .login-btn:hover {
+            background: #2980b9;
+        }
+
+        .main-layout {
+            display: flex;
+            gap: 28px;
+            max-width: 1400px;
+            margin: 32px auto 0 auto;
+            padding: 0 18px 32px 18px;
+        }
+        
+        .sidebar {
+            width: 280px;
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            padding: 24px 20px 20px 20px;
+            min-width: 200px;
+            max-width: 320px;
+            margin-bottom: 20px;
+            height: fit-content;
+            position: sticky;
+            top: 100px;
+        }
+        
+        .sidebar h3 {
+            margin-top: 0;
+            font-size: 20px;
+            color: #2c3e50;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .sidebar .filter-group {
+            margin-bottom: 18px;
+        }
+        
+        .sidebar label {
+            font-weight: 500;
+            color: #444;
+            margin-bottom: 6px;
+            display: block;
+            font-size: 15px;
+        }
+        
+        .sidebar select, .sidebar input[type="number"] {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            margin-bottom: 10px;
+            font-size: 15px;
+            transition: border 0.3s;
+        }
+        
+        .sidebar select:focus, .sidebar input[type="number"]:focus {
+            border-color: #3498db;
+            outline: none;
+        }
+        
+        .sidebar button {
+            width: 100%;
+            background: #3498db;
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            padding: 12px 0;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 8px;
+            transition: background 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        
+        .sidebar button:hover {
+            background: #2980b9;
+        }
+
+        .content-area {
+            flex: 1;
+            min-width: 0;
+        }
+        
+        .search-hero {
+            background: linear-gradient(135deg, #3498db, #2c3e50);
+            color: #fff;
+            border-radius: 12px;
+            padding: 38px 32px 28px 32px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+        
+        .search-hero h2 {
+            margin: 0 0 12px 0;
+            font-size: 32px;
+            font-weight: 700;
+            letter-spacing: 1px;
+        }
+        
+        .search-hero p {
+            margin: 0 0 8px 0;
+            font-size: 17px;
+            color: #e9ecef;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        .results-info {
+            margin-bottom: 20px;
+            font-size: 16px;
+            color: #555;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 10px;
+        }
+        
+        .vehicle-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 28px;
+        }
+        
+        .vehicle-card {
+            border: 1px solid #e0e0e0;
+            border-radius: 12px;
+            padding: 22px 20px 18px 20px;
+            background: #fff;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            display: flex;
+            flex-direction: column;
+            transition: transform 0.3s, box-shadow 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .vehicle-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 24px rgba(52, 152, 219, 0.15);
+            border-color: #3498db;
+        }
+        
+        .vehicle-card h3 {
+            margin: 0 0 12px 0;
+            color: #2c3e50;
+            font-size: 20px;
+            font-weight: 600;
+        }
+        
+        .vehicle-card p {
+            margin: 6px 0;
+            color: #555;
+            font-size: 15px;
+            line-height: 1.5;
+        }
+        
+        .vehicle-card .desc {
+            color: #666;
+            font-size: 14px;
+            margin-bottom: 8px;
+        }
+        
+        .vehicle-card .price {
+            font-size: 24px;
+            font-weight: bold;
+            color: #3498db;
+            margin: 10px 0;
+        }
+        
+        .vehicle-card button {
+            width: 100%;
+            margin-top: 12px;
+            background: #27ae60;
+            color: #fff;
+            font-size: 16px;
+            border: none;
+            border-radius: 6px;
+            padding: 12px 0;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        
+        .vehicle-card button:hover {
+            background: #219653;
+        }
+        
+        .status-badge {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+        
+        .status-available {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        .status-rented {
+            background: #d1ecf1;
+            color: #0c5460;
+        }
+        
+        .status-maintenance {
+            background: #fff3cd;
+            color: #856404;
+        }
+        
+        .vehicle-features {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin: 12px 0;
+        }
+        
+        .feature-tag {
+            background: #e8f4fd;
+            color: #3498db;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+        
+        @media (max-width: 1100px) {
+            .main-layout { 
+                flex-direction: column; 
+                gap: 0; 
+            }
+            .sidebar { 
+                width: 100%; 
+                max-width: 100%; 
+                margin-bottom: 24px; 
+                position: static;
+            }
+        }
+        
+        @media (max-width: 700px) {
+            .main-layout { 
+                padding: 0 2vw 32px 2vw; 
+            }
+            .search-hero { 
+                padding: 24px 8px 18px 8px; 
+            }
+            .vehicle-grid { 
+                grid-template-columns: 1fr; 
+            }
+            .navbar {
+                padding: 0 16px;
+            }
+            .navbar .menu {
+                gap: 12px;
+            }
+        }
+        
+        .footer {
+            background: #2c3e50;
+            color: #ecf0f1;
+            text-align: center;
+            padding: 28px 0 18px 0;
+            font-size: 15px;
+            margin-top: 40px;
+            border-top-left-radius: 18px;
+            border-top-right-radius: 18px;
+        }
+        
+        .footer a { 
+            color: #3498db; 
+            text-decoration: none; 
+        }
+        
+        .footer a:hover { 
+            text-decoration: underline; 
+        }
+        
+        .empty-state {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 40px 20px;
+            color: #666;
+        }
+        
+        .empty-state i {
+            font-size: 48px;
+            color: #bdc3c7;
+            margin-bottom: 16px;
+        }
+        
+        .empty-state h3 {
+            color: #7f8c8d;
+            margin-bottom: 8px;
+        }
+        
+        .loading {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 40px 20px;
+            color: #666;
+        }
+        
+        .loading-spinner {
+            display: inline-block;
+            width: 40px;
+            height: 40px;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #3498db;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 16px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+</head>
+<body>
+    <div class="navbar">
+        <div class="brand">
+            <i class="fa-solid fa-car-side"></i> P2P Car Rental
+        </div>
+        <div class="menu">
+            <a href="index.html">Home</a>
+            <a href="search.html" style="color: #3498db; background: #f8f9fa;">Search Vehicles</a>
+            <a href="rent.html">My Rentals</a>
+            <a href="profile.html">Profile</a>
+        </div>
+        <div class="user-status" id="userStatus">
+            <!-- User login status will be populated by JS -->
+        </div>
+    </div>
+    
+    <div class="main-layout">
+        <aside class="sidebar">
+            <h3><i class="fa-solid fa-filter"></i> Filter Options</h3>
+            <form id="searchForm">
+                <div class="filter-group">
+                    <label for="carType">Vehicle Type</label>
+                    <select id="carType" name="carType">
+                        <option value="">All Types</option>
+                        <option value="SUV">SUV</option>
+                        <option value="Sedan">Sedan</option>
+                        <option value="Coupe">Coupe</option>
+                        <option value="Hatchback">Hatchback</option>
+                        <option value="Convertible">Convertible</option>
+                        <option value="Minivan">Minivan</option>
+                        <option value="Truck">Truck</option>
+                        <option value="Electric">Electric</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label for="min_price">Minimum Price (¥/day)</label>
+                    <input type="number" id="min_price" name="min_price" placeholder="0" min="0">
+                </div>
+                <div class="filter-group">
+                    <label for="max_price">Maximum Price (¥/day)</label>
+                    <input type="number" id="max_price" name="max_price" placeholder="1000" min="0">
+                </div>
+                <button type="submit"><i class="fa-solid fa-magnifying-glass"></i> Search Vehicles</button>
+            </form>
+        </aside>
+        
+        <main class="content-area">
+            <div class="search-hero">
+                <h2><i class="fa-solid fa-car-side"></i> Search Available Vehicles</h2>
+                <p>Enter your filter criteria to quickly find your ideal vehicle and enjoy a convenient P2P car rental experience</p>
+            </div>
+            
+            <div id="searchResults">
+                <div id="resultsInfo" class="results-info"></div>
+                <div id="vehicleList" class="vehicle-grid">
+                    <!-- Vehicle cards will be dynamically generated by JavaScript -->
+                </div>
+            </div>
+        </main>
+    </div>
+    
+    <div class="footer">
+        &copy; 2024 P2P Car Rental | Safe Peer-to-Peer Car Rental Platform | <a href="mailto:support@p2pcarrental.com">Contact Us</a>
+    </div>
+    
+    <script src="config.js"></script>
+    <script>
+        // Initialize when page loads
+        window.onload = function() {
+            // User status bar
+            updateUserStatus();
+            
+            // Load all available vehicles
+            loadVehicles();
+            
+            // Set up search form submission
+            document.getElementById('searchForm').onsubmit = function(e) {
+                e.preventDefault();
+                searchVehicles();
+            };
+        };
+
+        // Update user status display
+        function updateUserStatus() {
+            const userStatusDiv = document.getElementById('userStatus');
+            const userId = localStorage.getItem('user_id');
+            if (userId) {
+                const userName = localStorage.getItem('user_name') || `User #${userId}`;
+                userStatusDiv.innerHTML = `<span>Welcome, ${userName}</span> <button class="login-btn" onclick="logout()">Logout</button>`;
+            } else {
+                userStatusDiv.innerHTML = `<button class="login-btn" onclick="window.location.href='login.html'">Login/Register</button>`;
+            }
+        }
+
+        // Logout function
+        function logout() {
+            localStorage.removeItem('user_id');
+            localStorage.removeItem('user_name');
+            localStorage.removeItem('renter_id');
+            alert('You have been logged out');
+            location.reload();
+        }
+
+        // Load all vehicles
+        async function loadVehicles() {
+            try {
+                document.getElementById('vehicleList').innerHTML = `
+                    <div class="loading">
+                        <div class="loading-spinner"></div>
+                        <p>Loading vehicle information...</p>
+                    </div>
+                `;
+                
+                const response = await fetch(`${API_BASE}/vehicles`);
+                const vehicles = await response.json();
+                
+                displayVehicles(vehicles);
+            } catch (error) {
+                console.error('Error loading vehicles:', error);
+                document.getElementById('vehicleList').innerHTML = `
+                    <div class="empty-state">
+                        <i class="fa-solid fa-exclamation-triangle"></i>
+                        <h3>Failed to load vehicles</h3>
+                        <p>Please check your network connection and try again later</p>
+                        <button class="login-btn" style="margin-top: 16px;" onclick="loadVehicles()">Reload</button>
+                    </div>
+                `;
+            }
+        }
+
+        // Search vehicles
+        async function searchVehicles() {
+            const formData = new FormData(document.getElementById('searchForm'));
+            const params = new URLSearchParams();
+            
+            for (const [key, value] of formData.entries()) {
+                if (value) params.append(key, value);
+            }
+            
+            try {
+                document.getElementById('vehicleList').innerHTML = `
+                    <div class="loading">
+                        <div class="loading-spinner"></div>
+                        <p>Searching for vehicles...</p>
+                    </div>
+                `;
+                
+                const response = await fetch(`${API_BASE}/vehicles?${params}`);
+                const vehicles = await response.json();
+                
+                displayVehicles(vehicles);
+            } catch (error) {
+                console.error('Error searching vehicles:', error);
+                document.getElementById('vehicleList').innerHTML = `
+                    <div class="empty-state">
+                        <i class="fa-solid fa-exclamation-triangle"></i>
+                        <h3>Search failed</h3>
+                        <p>Please check your network connection and try again later</p>
+                        <button class="login-btn" style="margin-top: 16px;" onclick="searchVehicles()">Search Again</button>
+                    </div>
+                `;
+            }
+        }
+
+        // Display vehicle list
+        function displayVehicles(vehicles) {
+            const vehicleList = document.getElementById('vehicleList');
+            const resultsInfo = document.getElementById('resultsInfo');
+            
+            if (!vehicles || vehicles.length === 0) {
+                vehicleList.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fa-solid fa-car"></i>
+                        <h3>No vehicles found matching your criteria</h3>
+                        <p>Try adjusting your filters or check back later</p>
+                    </div>
+                `;
+                resultsInfo.innerHTML = '<p>Found 0 vehicles</p>';
+                return;
+            }
+            
+            resultsInfo.innerHTML = `<p>Found ${vehicles.length} vehicles</p>`;
+            
+            vehicleList.innerHTML = vehicles.map(vehicle => {
+                // Determine status badge
+                let statusClass = 'status-available';
+                let statusText = 'Available';
+                
+                if (vehicle.status === 'rented') {
+                    statusClass = 'status-rented';
+                    statusText = 'Rented';
+                } else if (vehicle.status === 'maintenance') {
+                    statusClass = 'status-maintenance';
+                    statusText = 'Maintenance';
+                }
+                
+                // Generate feature tags
+                const features = [];
+                if (vehicle.seatNum) features.push(`${vehicle.seatNum} seats`);
+                if (vehicle.year) features.push(`${vehicle.year} model`);
+                if (vehicle.color) features.push(vehicle.color);
+                
+                return `
+                <div class="vehicle-card">
+                    <span class="status-badge ${statusClass}">${statusText}</span>
+                    <h3>${vehicle.brand || ''} ${vehicle.model || ''}</h3>
+                    <p><i class="fa-solid fa-car"></i> ${vehicle.carType}</p>
+                    <div class="vehicle-features">
+                        ${features.map(feature => `<span class="feature-tag">${feature}</span>`).join('')}
+                    </div>
+                    <div class="price">¥${vehicle.dailyPrice}/day</div>
+                    <p><i class="fa-solid fa-location-dot"></i> ${vehicle.location || 'Location information pending update'}</p>
+                    ${vehicle.description ? `<p class="desc">${vehicle.description}</p>` : ''}
+                    <button onclick="selectVehicle(${vehicle.vehicle_id})" ${vehicle.status !== 'available' ? 'disabled style="background: #95a5a6; cursor: not-allowed;"' : ''}>
+                        <i class="fa-solid fa-calendar-check"></i> 
+                        ${vehicle.status === 'available' ? 'Book Now' : vehicle.status === 'rented' ? 'Already Rented' : 'Under Maintenance'}
+                    </button>
+                </div>
+                `;
+            }).join('');
+        }
+
+        // Select vehicle
+        function selectVehicle(vehicleId) {
+            const userId = localStorage.getItem('user_id');
+            if (!userId) {
+                alert('Please log in first to book a vehicle');
+                window.location.href = 'login.html';
+                return;
+            }
+            
+            localStorage.setItem('selected_vehicle_id', vehicleId);
+            window.location.href = 'insurance.html';
+        }
+    </script>
+</body>
+</html>
