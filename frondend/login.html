@@ -225,13 +225,18 @@
         
         // Login successful
         localStorage.setItem('user_id', data.user_id);
-        localStorage.setItem('user_name', data.user_id); // In a real app, you'd get the actual name
+        localStorage.setItem('user_name', data.name || data.user_id);
         localStorage.setItem('user_type', data.userType);
         
         messageDiv.innerHTML = '<div class="message success"><i class="fa-solid fa-check-circle"></i> Login successful! Redirecting...</div>';
         
         setTimeout(() => {
-          window.location.href = 'index.html';
+          // Renter / Owner 登入後導向各自 dashboard（預設導向 Renter Dashboard）
+          if (data.userType === 'owner') {
+            window.location.href = 'ownerDashboard.html';
+          } else {
+            window.location.href = 'renter-dashboard.html';
+          }
         }, 1500);
         
       } catch (error) {
@@ -242,8 +247,13 @@
     // Redirect if already logged in
     window.onload = function() {
       const userId = localStorage.getItem('user_id');
+      const userType = localStorage.getItem('user_type');
       if (userId) {
-        window.location.href = 'index.html';
+        if (userType === 'owner') {
+          window.location.href = 'ownerDashboard.html';
+        } else {
+          window.location.href = 'renter-dashboard.html';
+        }
       }
     };
   </script>

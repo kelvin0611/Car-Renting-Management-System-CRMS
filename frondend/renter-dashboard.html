@@ -1,0 +1,781 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <title>我的租車 - Renter Dashboard | P2P Car Rental</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+      margin: 0;
+      background: #f5f7fb;
+      color: #222;
+    }
+    .navbar {
+      background: #ffffff;
+      box-shadow: 0 2px 10px rgba(15, 23, 42, 0.08);
+      padding: 0 32px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 64px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .navbar .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 22px;
+      font-weight: 700;
+      color: #0f77ff;
+      letter-spacing: .5px;
+    }
+    .navbar .brand i { font-size: 24px; }
+    .navbar .menu {
+      display: flex;
+      gap: 20px;
+      align-items: center;
+      font-size: 15px;
+    }
+    .navbar .menu a {
+      color: #475569;
+      text-decoration: none;
+      padding: 8px 12px;
+      border-radius: 999px;
+      transition: background .2s, color .2s;
+    }
+    .navbar .menu a.active {
+      background: #0f77ff;
+      color: #fff;
+    }
+    .navbar .menu a:hover {
+      background: #e2ecff;
+      color: #0f77ff;
+    }
+    .navbar .user-status {
+      font-size: 14px;
+      color: #64748b;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .navbar .user-status .avatar {
+      width: 30px;
+      height: 30px;
+      border-radius: 999px;
+      background: linear-gradient(135deg,#0f77ff,#22c55e);
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      font-weight: 600;
+    }
+    .navbar .user-status button {
+      border: 0;
+      background: #e11d48;
+      color: #fff;
+      padding: 6px 10px;
+      border-radius: 999px;
+      font-size: 13px;
+      cursor: pointer;
+    }
+    .navbar .user-status button:hover { background:#be123c; }
+
+    .page {
+      max-width: 1120px;
+      margin: 24px auto 40px;
+      padding: 0 18px;
+    }
+    .hero {
+      background: radial-gradient(circle at 0% 0%, #e0f2fe 0, transparent 55%),
+                  radial-gradient(circle at 100% 0%, #fee2e2 0, transparent 50%),
+                  #0f172a;
+      color: #e5f0ff;
+      border-radius: 18px;
+      padding: 24px 24px 20px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 18px;
+      align-items: center;
+      box-shadow: 0 18px 40px rgba(15,23,42,0.45);
+      position: relative;
+      overflow: hidden;
+    }
+    .hero-main { flex: 1 1 260px; z-index:1; }
+    .hero-eyebrow {
+      font-size: 13px;
+      color: #93c5fd;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      margin-bottom: 6px;
+    }
+    .hero h1 {
+      margin: 0 0 6px 0;
+      font-size: 26px;
+      color: #f9fafb;
+    }
+    .hero p {
+      margin: 0;
+      font-size: 14px;
+      color: #cbd5f5;
+    }
+    .hero-actions {
+      margin-top: 14px;
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px;
+    }
+    .btn {
+      border-radius: 999px;
+      border: none;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 600;
+      padding: 9px 16px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: transform .15s, box-shadow .15s, background .15s;
+    }
+    .btn-primary {
+      background: #22c55e;
+      color: #022c22;
+      box-shadow: 0 10px 25px rgba(34,197,94,0.5);
+    }
+    .btn-primary:hover { background:#16a34a; transform:translateY(-1px); }
+    .btn-ghost {
+      background: rgba(15,23,42,0.7);
+      color: #e5e7eb;
+      border: 1px solid rgba(148,163,184,0.5);
+    }
+    .btn-ghost:hover { background: rgba(15,23,42,0.9); }
+
+    .hero-meta {
+      flex: 0 0 260px;
+      background: rgba(15,23,42,0.85);
+      border-radius: 16px;
+      padding: 14px 14px 10px;
+      border: 1px solid rgba(148,163,184,0.5);
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+      z-index:1;
+    }
+    .hero-meta-row {
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      font-size:13px;
+      color:#cbd5f5;
+    }
+    .hero-meta-row strong { color:#e5e7eb; }
+    .status-chip {
+      padding: 3px 9px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .12em;
+    }
+    .status-chip-green {
+      background: rgba(34,197,94,0.12);
+      color: #bbf7d0;
+    }
+    .status-chip-amber {
+      background: rgba(245,158,11,0.12);
+      color: #fed7aa;
+    }
+
+    .columns {
+      display: grid;
+      grid-template-columns: 3fr 2fr;
+      gap: 18px;
+      margin-top: 22px;
+      align-items: flex-start;
+    }
+    .card {
+      background:#fff;
+      border-radius:16px;
+      box-shadow:0 8px 24px rgba(15,23,42,0.06);
+      padding:16px 16px 14px;
+    }
+    .card-header {
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      margin-bottom:10px;
+    }
+    .card-header h2 {
+      margin:0;
+      font-size:16px;
+      color:#020617;
+      display:flex;
+      align-items:center;
+      gap:8px;
+    }
+    .card-header small { color:#6b7280; font-size:12px; }
+
+    .pill {
+      padding:4px 10px;
+      border-radius:999px;
+      font-size:11px;
+      font-weight:600;
+    }
+    .pill-soft-green { background:#ecfdf3; color:#166534; }
+    .pill-soft-slate { background:#e5e7eb; color:#374151; }
+
+    .ongoing-list, .history-list {
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+      max-height:340px;
+      overflow:auto;
+    }
+    .rental-card {
+      background:#f9fafb;
+      border-radius:14px;
+      padding:10px 12px;
+      display:grid;
+      grid-template-columns: auto 1fr auto;
+      gap:10px;
+      border:1px solid #e5e7eb;
+    }
+    .rental-badge {
+      width:46px;
+      height:46px;
+      border-radius:12px;
+      background:linear-gradient(135deg,#0f77ff,#22c55e);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      color:#fff;
+      font-size:22px;
+    }
+    .rental-main {
+      display:flex;
+      flex-direction:column;
+      gap:4px;
+      font-size:13px;
+    }
+    .rental-main-title {
+      font-weight:600;
+      color:#111827;
+      display:flex;
+      align-items:center;
+      gap:6px;
+      flex-wrap:wrap;
+    }
+    .rental-main-sub { color:#6b7280; font-size:12px; }
+    .rental-meta {
+      display:flex;
+      flex-wrap:wrap;
+      gap:6px 12px;
+      margin-top:2px;
+    }
+    .meta-item {
+      font-size:11px;
+      color:#4b5563;
+      display:flex;
+      align-items:center;
+      gap:4px;
+    }
+    .meta-item i { font-size:11px; color:#0f766e; }
+
+    .rental-side {
+      display:flex;
+      flex-direction:column;
+      align-items:flex-end;
+      justify-content:space-between;
+      gap:6px;
+      font-size:11px;
+    }
+    .countdown {
+      font-weight:600;
+      color:#0f766e;
+      display:flex;
+      align-items:center;
+      gap:4px;
+    }
+    .countdown.soon { color:#b45309; }
+    .countdown.overdue { color:#b91c1c; }
+    .secondary-link {
+      font-size:11px;
+      color:#0369a1;
+      text-decoration:none;
+    }
+    .secondary-link:hover { text-decoration:underline; }
+
+    .empty-state {
+      padding:18px 10px;
+      text-align:center;
+      color:#6b7280;
+      font-size:13px;
+    }
+    .empty-state i {
+      font-size:22px;
+      color:#cbd5f5;
+      margin-bottom:4px;
+    }
+
+    .flow-steps {
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+      margin-top:6px;
+    }
+    .flow-step {
+      display:flex;
+      gap:10px;
+      align-items:flex-start;
+      padding:9px 10px;
+      border-radius:12px;
+      background:#f9fafb;
+      border:1px dashed #e5e7eb;
+    }
+    .flow-icon {
+      width:26px;
+      height:26px;
+      border-radius:999px;
+      background:#e0f2fe;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      color:#0f77ff;
+      font-size:13px;
+      flex-shrink:0;
+    }
+    .flow-body h3 {
+      margin:0 0 2px 0;
+      font-size:13px;
+      color:#111827;
+    }
+    .flow-body p {
+      margin:0;
+      font-size:12px;
+      color:#6b7280;
+    }
+
+    .trust-strip {
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px;
+      margin-top:8px;
+      font-size:11px;
+      color:#6b7280;
+    }
+    .trust-tag {
+      padding:4px 9px;
+      border-radius:999px;
+      background:#ecfdf3;
+      color:#166534;
+      display:flex;
+      align-items:center;
+      gap:5px;
+    }
+
+    @media (max-width: 900px) {
+      .navbar { padding:0 16px; }
+      .columns { grid-template-columns:1fr; }
+      .hero { padding:20px 16px; }
+      .hero-meta { flex:1 1 100%; }
+    }
+    @media (max-width: 640px) {
+      .navbar .menu { display:none; }
+      .page { padding:0 12px; }
+      .rental-card { grid-template-columns:auto 1fr; }
+      .rental-side { align-items:flex-start; }
+    }
+  </style>
+</head>
+<body>
+  <div class="navbar">
+    <div class="brand">
+      <i class="fa-solid fa-car-side"></i>
+      <span>P2P Car Rental</span>
+    </div>
+    <div class="menu">
+      <a href="renter-dashboard.html" class="active">我的租車</a>
+      <a href="search.html">找車</a>
+      <a href="return.html">訂單與還車</a>
+    </div>
+    <div class="user-status" id="userStatus">
+      <!-- filled by JS -->
+    </div>
+  </div>
+
+  <main class="page">
+    <section class="hero">
+      <div class="hero-main">
+        <div class="hero-eyebrow">Renter Dashboard · 我的租車狀態</div>
+        <h1>一眼掌握你在香港的每一段旅程</h1>
+        <p>查看正在進行的租車、即將到期提醒與歷史行程。需要新行程？幾秒鐘就可以再次預訂。</p>
+        <div class="hero-actions">
+          <button class="btn btn-primary" onclick="goSearch()">
+            <i class="fa-solid fa-magnifying-glass"></i>
+            立即找車
+          </button>
+          <button class="btn btn-ghost" onclick="location.href='return.html'">
+            <i class="fa-solid fa-receipt"></i>
+            查看訂單與還車
+          </button>
+        </div>
+      </div>
+      <aside class="hero-meta" id="summaryPanel">
+        <!-- filled by JS -->
+      </aside>
+    </section>
+
+    <section class="columns" aria-label="renter dashboard content">
+      <section class="card">
+        <header class="card-header">
+          <div>
+            <h2><i class="fa-solid fa-calendar-check"></i> 進行中租賃</h2>
+            <small>即將取車、進行中與即將到期的行程</small>
+          </div>
+          <span class="pill pill-soft-green" id="ongoingCountBadge">Loading…</span>
+        </header>
+        <div id="ongoingList" class="ongoing-list">
+          <!-- ongoing rentals -->
+        </div>
+      </section>
+
+      <section class="card">
+        <header class="card-header">
+          <div>
+            <h2><i class="fa-solid fa-route"></i> 歷史與流程</h2>
+            <small>過往訂單簡要、以及租車流程提示</small>
+          </div>
+          <a href="return.html" class="secondary-link">查看完整歷史</a>
+        </header>
+        <div id="historyList" class="history-list" aria-label="recent history">
+          <!-- recent history -->
+        </div>
+        <hr style="border:none;border-top:1px solid #e5e7eb;margin:10px 0 8px;">
+        <div>
+          <div style="font-size:13px;color:#4b5563;font-weight:600;margin-bottom:4px;">
+            Renter 租車流程一覽
+          </div>
+          <div class="flow-steps">
+            <div class="flow-step">
+              <div class="flow-icon"><i class="fa-solid fa-search"></i></div>
+              <div class="flow-body">
+                <h3>1. 搜車 Search</h3>
+                <p>輸入日期、地點與預算，在全港可用車輛中即時搜尋。</p>
+              </div>
+            </div>
+            <div class="flow-step">
+              <div class="flow-icon"><i class="fa-solid fa-car-side"></i></div>
+              <div class="flow-body">
+                <h3>2. 選車 Select</h3>
+                <p>比較車款、評價與車主回覆速度，選擇最適合你的一部。</p>
+              </div>
+            </div>
+            <div class="flow-step">
+              <div class="flow-icon"><i class="fa-solid fa-shield-heart"></i></div>
+              <div class="flow-body">
+                <h3>3. 保險 Insurance</h3>
+                <p>按行程需要選擇基本或全保方案，清楚顯示免賠額與保障範圍。</p>
+              </div>
+            </div>
+            <div class="flow-step">
+              <div class="flow-icon"><i class="fa-solid fa-credit-card"></i></div>
+              <div class="flow-body">
+                <h3>4. 付款 Pay</h3>
+                <p>以 HK$ 結算，支援信用卡、FPS 及常見電子錢包。</p>
+              </div>
+            </div>
+            <div class="flow-step">
+              <div class="flow-icon"><i class="fa-solid fa-location-dot"></i></div>
+              <div class="flow-body">
+                <h3>5. 取還車 Pick-up & Return</h3>
+                <p>於約定地點交收車輛，完成還車後訂單自動標記為完成。</p>
+              </div>
+            </div>
+          </div>
+          <div class="trust-strip" aria-label="trust metrics">
+            <span class="trust-tag">
+              <i class="fa-solid fa-star"></i> 4.9/5 平台評分（模擬）
+            </span>
+            <span class="trust-tag">
+              <i class="fa-solid fa-car-side"></i> 10,000+ 次安全租車（模擬）
+            </span>
+          </div>
+        </div>
+      </section>
+    </section>
+  </main>
+
+  <script src="config.js"></script>
+  <script>
+    let rentals = [];
+
+    window.onload = async function () {
+      const userId = localStorage.getItem('user_id');
+      const userName = localStorage.getItem('user_name') || '';
+      const userStatusDiv = document.getElementById('userStatus');
+
+      if (!userId) {
+        // 未登入導向登入頁，但保留 landing 體驗給新客戶
+        alert('請先登入 Renter 帳戶');
+        window.location.href = 'login.html';
+        return;
+      }
+
+      // Navbar user 部分
+      const initials = userName ? userName.toString().charAt(0).toUpperCase() : 'U';
+      userStatusDiv.innerHTML = `
+        <div class="avatar">${initials}</div>
+        <div>
+          <div style="font-size:13px;color:#0f172a;">你好，User #${userId}</div>
+          <div style="font-size:11px;color:#64748b;">Renter</div>
+        </div>
+        <button onclick="logout()"><i class="fa-solid fa-arrow-right-from-bracket"></i></button>
+      `;
+
+      await loadRentals(userId);
+      renderDashboard();
+    };
+
+    function logout() {
+      localStorage.removeItem('user_id');
+      localStorage.removeItem('renter_id');
+      localStorage.removeItem('user_name');
+      localStorage.removeItem('user_type');
+      alert('已登出');
+      window.location.href = 'index.html';
+    }
+
+    function goSearch() {
+      window.location.href = 'search.html';
+    }
+
+    async function loadRentals(userId) {
+      try {
+        const res = await fetch(API_BASE + '/user/' + userId + '/rentals');
+        if (!res.ok) throw new Error('載入租賃資料失敗');
+        rentals = await res.json();
+      } catch (e) {
+        console.error(e);
+        rentals = [];
+      }
+    }
+
+    function isOngoing(rental) {
+      // 與 return.html 的「當前租單」邏輯保持一致：
+      // 已付款且 orderStatus 為 confirmed，即視為進行中 / 可還車
+      return rental.orderStatus === 'confirmed' && rental.paymentStatus === 'paid';
+    }
+
+    function isCompleted(rental) {
+      return rental.orderStatus === 'completed';
+    }
+
+    function isOverdue(rental) {
+      const now = new Date();
+      const end = new Date(rental.rentalEndTime);
+      const finished = isCompleted(rental);
+      return !finished && now > end;
+    }
+
+    function formatCountdown(rental) {
+      const now = new Date();
+      const start = new Date(rental.rentalStartTime);
+      const end = new Date(rental.rentalEndTime);
+
+      if (now < start) {
+        const diff = start - now;
+        const hours = Math.round(diff / (1000 * 60 * 60));
+        if (hours <= 0) return { text: '即將取車', tone: 'soon' };
+        if (hours < 24) return { text: '距離取車 ' + hours + ' 小時', tone: 'soon' };
+        const days = Math.round(hours / 24);
+        return { text: '距離取車 ' + days + ' 天', tone: '' };
+      }
+
+      const diff = end - now;
+      if (diff <= 0) return { text: '已逾期，請盡快還車', tone: 'overdue' };
+      const hours = Math.round(diff / (1000 * 60 * 60));
+      if (hours < 24) return { text: '剩餘 ' + hours + ' 小時', tone: 'soon' };
+      const days = Math.round(hours / 24);
+      return { text: '剩餘 ' + days + ' 天', tone: '' };
+    }
+
+    function renderDashboard() {
+      const ongoing = rentals.filter(isOngoing);
+      const history = rentals
+        .filter(r => !isOngoing(r))
+        .sort((a, b) => new Date(b.rentalStartTime) - new Date(a.rentalStartTime))
+        .slice(0, 5);
+
+      renderSummary(ongoing);
+      renderOngoing(ongoing);
+      renderHistory(history);
+    }
+
+    function renderSummary(ongoing) {
+      const summaryEl = document.getElementById('summaryPanel');
+      const now = new Date();
+      const upcoming = rentals.filter(r => {
+        const start = new Date(r.rentalStartTime);
+        return start > now && (r.paymentStatus === 'paid' || r.orderStatus === 'confirmed');
+      });
+      const completedCount = rentals.filter(isCompleted).length;
+
+      const soonTrip = upcoming.sort((a, b) => new Date(a.rentalStartTime) - new Date(b.rentalStartTime))[0];
+      const soonText = soonTrip
+        ? new Date(soonTrip.rentalStartTime).toLocaleString('zh-HK', { month:'short', day:'numeric', hour:'2-digit', minute:'2-digit' })
+        : '暫無即將出發行程';
+
+      summaryEl.innerHTML = `
+        <div class="hero-meta-row">
+          <span>進行中租車</span>
+          <strong>${ongoing.length} 個行程</strong>
+        </div>
+        <div class="hero-meta-row">
+          <span>歷史完成訂單</span>
+          <strong>${completedCount} 個</strong>
+        </div>
+        <div class="hero-meta-row">
+          <span>最近一個行程</span>
+          <span style="font-size:12px;">${soonText}</span>
+        </div>
+        <div class="hero-meta-row">
+          <span>狀態</span>
+          <span class="status-chip status-chip-green">
+            <i class="fa-solid fa-circle-check"></i> 帳戶良好
+          </span>
+        </div>
+      `;
+
+      document.getElementById('ongoingCountBadge').textContent =
+        ongoing.length ? (ongoing.length + ' 個進行中') : '目前沒有進行中租車';
+    }
+
+    function renderOngoing(ongoing) {
+      const listEl = document.getElementById('ongoingList');
+      if (!ongoing.length) {
+        listEl.innerHTML = `
+          <div class="empty-state">
+            <i class="fa-solid fa-calendar-plus"></i>
+            <div>目前沒有進行中的租車。</div>
+            <div style="margin-top:4px;">可以點擊「立即找車」開始下一段旅程。</div>
+          </div>
+        `;
+        return;
+      }
+
+      listEl.innerHTML = ongoing.map(r => {
+        const countdown = formatCountdown(r);
+        const toneClass =
+          countdown.tone === 'soon'
+            ? 'soon'
+            : countdown.tone === 'overdue'
+            ? 'overdue'
+            : '';
+        const brandModel = [r.brand, r.model].filter(Boolean).join(' ');
+        const carTitle = (brandModel || r.carType || '車輛') + (r.carType ? ' · ' + r.carType : '');
+        const start = new Date(r.rentalStartTime).toLocaleString('zh-HK', { month:'short', day:'numeric', hour:'2-digit', minute:'2-digit' });
+        const end = new Date(r.rentalEndTime).toLocaleString('zh-HK', { month:'short', day:'numeric', hour:'2-digit', minute:'2-digit' });
+
+        return `
+          <article class="rental-card">
+            <div class="rental-badge">
+              <i class="fa-solid fa-car-side"></i>
+            </div>
+            <div class="rental-main">
+              <div class="rental-main-title">
+                <span>${carTitle}</span>
+                <span class="pill pill-soft-slate">訂單 #${r.rental_id}</span>
+              </div>
+              <div class="rental-main-sub">
+                取車：${start} · 還車：${end}
+              </div>
+              <div class="rental-meta">
+                <div class="meta-item">
+                  <i class="fa-solid fa-location-dot"></i>
+                  <span>${r.pickupLocation || '取車地點待定'}</span>
+                </div>
+                <div class="meta-item">
+                  <i class="fa-solid fa-flag-checkered"></i>
+                  <span>${r.dropoffLocation || '還車地點待定'}</span>
+                </div>
+                <div class="meta-item">
+                  <i class="fa-solid fa-shield-heart"></i>
+                  <span>${r.insurance_type || '未購買額外保險'}</span>
+                </div>
+                <div class="meta-item">
+                  <i class="fa-solid fa-dollar-sign"></i>
+                  <span>HK$${Number(r.totalAmount || 0).toFixed(2)}</span>
+                </div>
+              </div>
+            </div>
+            <div class="rental-side">
+              <div class="countdown ${toneClass}">
+                <i class="fa-regular fa-clock"></i>
+                <span>${countdown.text}</span>
+              </div>
+              <a class="secondary-link" href="return.html">
+                管理訂單與還車 <i class="fa-solid fa-arrow-right"></i>
+              </a>
+            </div>
+          </article>
+        `;
+      }).join('');
+    }
+
+    function renderHistory(history) {
+      const listEl = document.getElementById('historyList');
+      if (!history.length) {
+        listEl.innerHTML = `
+          <div class="empty-state">
+            <i class="fa-solid fa-clock-rotate-left"></i>
+            <div>暫時沒有歷史訂單紀錄。</div>
+          </div>
+        `;
+        return;
+      }
+
+      listEl.innerHTML = history.map(r => {
+        const start = new Date(r.rentalStartTime).toLocaleDateString('zh-HK', { month:'short', day:'numeric' });
+        const end = new Date(r.rentalEndTime).toLocaleDateString('zh-HK', { month:'short', day:'numeric' });
+        const brandModel = [r.brand, r.model].filter(Boolean).join(' ');
+        const title = (brandModel || r.carType || '車輛') + (r.carType ? ' · ' + r.carType : '');
+        const statusLabel = getReadableStatus(r);
+
+        return `
+          <article class="rental-card" style="grid-template-columns: auto 1fr;">
+            <div class="rental-badge" style="background:#0f172a;">
+              <i class="fa-solid fa-clock-rotate-left"></i>
+            </div>
+            <div class="rental-main">
+              <div class="rental-main-title">
+                <span>${title}</span>
+                <span class="pill pill-soft-slate">${statusLabel}</span>
+              </div>
+              <div class="rental-main-sub">
+                ${start} – ${end} · HK$${Number(r.totalAmount || 0).toFixed(2)}
+              </div>
+              <div class="meta-item" style="margin-top:4px;">
+                <i class="fa-solid fa-location-dot"></i>
+                <span>${r.pickupLocation || '-'} → ${r.dropoffLocation || '-'}</span>
+              </div>
+            </div>
+          </article>
+        `;
+      }).join('');
+    }
+
+    function getReadableStatus(rental) {
+      if (isCompleted(rental)) return '已完成';
+      if (isOverdue(rental)) return '已逾期';
+      if (rental.orderStatus === 'cancelled') return '已取消';
+      if (rental.paymentStatus !== 'paid') return '待付款';
+      return '進行中';
+    }
+  </script>
+</body>
+</html>
+

@@ -2,278 +2,568 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>P2P Car Rental - Process Navigation</title>
+  <title>P2P Car Rental | 香港最方便的 P2P 租車平台</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
   <style>
-    body { font-family: 'Segoe UI', Arial, sans-serif; background: #f7f7f7; margin: 0; padding: 0; }
-    .header {
-      background: #007bff;
-      color: #fff;
-      padding: 24px 0 16px 0;
-      text-align: center;
-      box-shadow: 0 2px 8px #cce;
-      border-bottom-left-radius: 30px;
-      border-bottom-right-radius: 30px;
+    * { box-sizing:border-box; margin:0; padding:0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+      background: radial-gradient(circle at top left,#e0f2fe 0,transparent 55%),
+                  radial-gradient(circle at bottom right,#fee2e2 0,transparent 55%),
+                  #0b1120;
+      color:#020617;
+      min-height:100vh;
+      display:flex;
+      flex-direction:column;
     }
-    .header .logo {
-      font-size: 32px;
-      font-weight: bold;
-      letter-spacing: 2px;
-      margin-bottom: 8px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 10px;
+    a { text-decoration:none; color:inherit; }
+
+    .nav {
+      max-width:1120px;
+      margin:14px auto 0;
+      padding:0 18px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      color:#e5e7eb;
     }
-    .header .subtitle {
-      font-size: 18px;
-      color: #e9ecef;
-      margin-bottom: 0;
+    .nav-left {
+      display:flex;
+      align-items:center;
+      gap:10px;
     }
-    .container {
-      max-width: 520px;
-      margin: 30px auto 30px auto;
-      background: #fff;
-      padding: 32px 28px 24px 28px;
-      border-radius: 18px;
-      box-shadow: 0 2px 16px #ddd;
-      position: relative;
+    .nav-logo {
+      width:32px;
+      height:32px;
+      border-radius:10px;
+      background:linear-gradient(135deg,#0f172a,#0ea5e9);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      color:#e5e7eb;
     }
-    .user-info { background: #e9ecef; padding: 15px; border-radius: 7px; margin-bottom: 24px; }
-    .logout-btn { background: #dc3545; color: #fff; padding: 5px 10px; font-size: 14px; border-radius: 4px; border: none; cursor: pointer; }
-    .logout-btn:hover { background: #c82333; }
-    .process-bar {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin: 30px 0 40px 0;
-      padding: 0 10px;
+    .nav-title {
+      font-weight:700;
+      letter-spacing:.05em;
+      font-size:15px;
+      text-transform:uppercase;
     }
-    .process-step {
-      flex: 1;
-      text-align: center;
-      position: relative;
-      font-size: 13px;
-      color: #555;
+    .nav-right {
+      display:flex;
+      gap:10px;
+      align-items:center;
     }
-    .process-step .icon {
-      display: block;
-      margin: 0 auto 6px auto;
-      font-size: 22px;
-      color: #007bff;
+    .nav-link {
+      font-size:14px;
+      color:#cbd5f5;
+      padding:6px 10px;
+      border-radius:999px;
     }
-    .process-step.active .icon {
-      color: #28a745;
+    .nav-link:hover { background:rgba(15,23,42,.7); }
+
+    .btn {
+      border-radius:999px;
+      border:none;
+      cursor:pointer;
+      font-size:14px;
+      font-weight:600;
+      padding:8px 16px;
+      display:inline-flex;
+      align-items:center;
+      gap:6px;
+      transition:background .15s, transform .15s, box-shadow .15s;
     }
-    .process-step:not(:last-child)::after {
-      content: '';
-      position: absolute;
-      top: 16px;
-      right: -8px;
-      width: 16px;
-      height: 3px;
-      background: #007bff;
-      border-radius: 2px;
-      z-index: 0;
+    .btn-primary {
+      background:#22c55e;
+      color:#022c22;
+      box-shadow:0 10px 25px rgba(34,197,94,.45);
     }
-    .step-card {
-      background: #f8f9fa;
-      border-radius: 10px;
-      box-shadow: 0 1px 4px #eee;
-      margin-bottom: 22px;
-      padding: 18px 18px 14px 18px;
-      display: flex;
-      align-items: flex-start;
-      gap: 18px;
-      border-left: 5px solid #007bff;
-      transition: box-shadow 0.2s;
+    .btn-primary:hover { background:#16a34a; transform:translateY(-1px); }
+    .btn-outline {
+      background:transparent;
+      border:1px solid rgba(148,163,184,.6);
+      color:#e5e7eb;
     }
-    .step-card:hover {
-      box-shadow: 0 4px 16px #e0e0e0;
-      border-left: 5px solid #28a745;
+    .btn-outline:hover { background:rgba(15,23,42,.7); }
+
+    .hero {
+      max-width:1120px;
+      margin:32px auto 0;
+      padding:0 18px 32px;
+      display:grid;
+      grid-template-columns: minmax(0,1.4fr) minmax(0,1.1fr);
+      gap:26px;
+      align-items:center;
+      color:#f9fafb;
     }
-    .step-icon {
-      font-size: 32px;
-      color: #007bff;
-      flex-shrink: 0;
-      margin-top: 2px;
+    .hero-kicker {
+      font-size:13px;
+      letter-spacing:.16em;
+      text-transform:uppercase;
+      color:#a5b4fc;
+      margin-bottom:6px;
     }
-    .step-content {
-      flex: 1;
+    .hero h1 {
+      font-size:32px;
+      line-height:1.2;
+      margin-bottom:8px;
     }
-    .step-content h2 {
-      margin: 0 0 8px 0;
-      font-size: 19px;
-      color: #222;
-      font-weight: 600;
-      letter-spacing: 1px;
+    .hero p {
+      font-size:15px;
+      color:#d1d5db;
+      margin-bottom:12px;
     }
-    .step-content p {
-      margin: 0 0 12px 0;
-      color: #555;
-      font-size: 15px;
+    .hero-highlight {
+      display:inline-flex;
+      align-items:center;
+      gap:6px;
+      padding:6px 10px;
+      border-radius:999px;
+      background:rgba(15,23,42,.8);
+      border:1px solid rgba(148,163,184,.6);
+      font-size:12px;
+      color:#e5e7eb;
+      margin-bottom:10px;
     }
-    button {
-      padding: 9px 22px;
-      font-size: 15px;
-      border-radius: 5px;
-      border: none;
-      cursor: pointer;
-      font-weight: 500;
-      box-shadow: 0 1px 4px #eee;
-      margin-top: 2px;
+    .hero-actions {
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px;
+      margin-top:4px;
+      margin-bottom:10px;
     }
-    .primary-btn { background: #007bff; color: #fff; }
-    .primary-btn:hover { background: #0056b3; }
-    .secondary-btn { background: #6c757d; color: #fff; }
-    .secondary-btn:hover { background: #545b62; }
+    .hero-trust {
+      display:flex;
+      flex-wrap:wrap;
+      gap:12px;
+      font-size:11px;
+      color:#cbd5f5;
+      margin-top:6px;
+    }
+    .hero-trust span {
+      display:flex;
+      align-items:center;
+      gap:4px;
+      opacity:.9;
+    }
+
+    .hero-card {
+      background:#f9fafb;
+      border-radius:20px;
+      padding:18px 16px 16px;
+      box-shadow:0 18px 40px rgba(15,23,42,.35);
+    }
+    .switcher {
+      display:inline-flex;
+      border-radius:999px;
+      background:#e5e7eb;
+      padding:3px;
+      gap:4px;
+      margin-bottom:10px;
+      font-size:12px;
+    }
+    .switch-pill {
+      padding:5px 10px;
+      border-radius:999px;
+      cursor:pointer;
+      display:flex;
+      align-items:center;
+      gap:4px;
+      color:#4b5563;
+      background:transparent;
+    }
+    .switch-pill.active {
+      background:#0f172a;
+      color:#e5e7eb;
+    }
+    .flow {
+      display:flex;
+      flex-direction:column;
+      gap:8px;
+      font-size:13px;
+    }
+    .flow-step {
+      display:flex;
+      gap:10px;
+      align-items:flex-start;
+      padding:8px 9px;
+      border-radius:12px;
+      background:#fff;
+      border:1px solid #e5e7eb;
+    }
+    .flow-icon {
+      width:26px;
+      height:26px;
+      border-radius:999px;
+      background:#eff6ff;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      color:#0f77ff;
+      font-size:13px;
+      flex-shrink:0;
+    }
+    .flow-body h3 { margin:0 0 2px 0; font-size:13px; color:#111827; }
+    .flow-body p { margin:0; font-size:12px; color:#6b7280; }
+
+    .flow-footer {
+      margin-top:10px;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      font-size:11px;
+      color:#6b7280;
+      flex-wrap:wrap;
+      gap:6px;
+    }
+    .badge-soft {
+      padding:4px 8px;
+      border-radius:999px;
+      background:#ecfdf3;
+      color:#166534;
+      font-weight:600;
+    }
+
+    .section {
+      max-width:1120px;
+      margin:0 auto;
+      padding:0 18px 40px;
+      color:#020617;
+    }
+    .section h2 {
+      font-size:20px;
+      margin-bottom:6px;
+      color:#0f172a;
+    }
+    .section p {
+      font-size:14px;
+      color:#4b5563;
+      margin-bottom:16px;
+    }
+    .grid-2 {
+      display:grid;
+      grid-template-columns:repeat(2,minmax(0,1fr));
+      gap:16px;
+    }
+    .value-card {
+      background:#f9fafb;
+      border-radius:16px;
+      padding:14px 14px 12px;
+      border:1px solid #e5e7eb;
+    }
+    .value-card h3 {
+      margin:0 0 6px 0;
+      font-size:15px;
+      color:#0f172a;
+      display:flex;
+      align-items:center;
+      gap:6px;
+    }
+    .value-card p {
+      margin:0;
+      font-size:13px;
+      color:#4b5563;
+    }
+    .mini-list {
+      margin-top:8px;
+      font-size:12px;
+      color:#4b5563;
+      padding-left:16px;
+    }
+
+    .stats-strip {
+      display:flex;
+      flex-wrap:wrap;
+      gap:12px;
+      margin-top:18px;
+      font-size:13px;
+    }
+    .stat-item {
+      padding:10px 12px;
+      border-radius:14px;
+      background:#020617;
+      color:#e5e7eb;
+      min-width:160px;
+    }
+    .stat-label { font-size:11px; color:#9ca3af; text-transform:uppercase; letter-spacing:.08em; }
+    .stat-value { font-size:16px; font-weight:700; margin-top:2px; }
+
     .footer {
-      text-align: center;
-      color: #888;
-      font-size: 13px;
-      padding: 18px 0 10px 0;
-      background: #f8f9fa;
-      border-top: 1px solid #eee;
-      border-bottom-left-radius: 18px;
-      border-bottom-right-radius: 18px;
-      margin-top: 30px;
+      margin-top:auto;
+      padding:18px 0 14px;
+      background:rgba(15,23,42,.92);
+      color:#9ca3af;
+      font-size:12px;
     }
-    @media (max-width: 600px) {
-      .container { max-width: 98vw; padding: 10vw 4vw; }
-      .header { padding: 18px 0 10px 0; }
-      .footer { padding: 12px 0 8px 0; }
-      .step-card { flex-direction: column; gap: 8px; }
-      .step-icon { font-size: 28px; }
+    .footer-inner {
+      max-width:1120px;
+      margin:0 auto;
+      padding:0 18px;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      flex-wrap:wrap;
+      gap:8px;
+    }
+    .footer-links {
+      display:flex;
+      gap:12px;
+      flex-wrap:wrap;
+    }
+    .footer a { color:#e5e7eb; }
+    .footer a:hover { text-decoration:underline; }
+
+    @media (max-width:900px){
+      .hero {
+        grid-template-columns:1fr;
+      }
+    }
+    @media (max-width:640px){
+      .nav { padding:0 12px; }
+      .hero { padding:0 12px 26px; }
+      .section { padding:0 12px 32px; }
+      .grid-2 { grid-template-columns:1fr; }
+      .nav-right { display:none; }
     }
   </style>
-  <!-- 使用 Font Awesome CDN 作為 icon -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
 </head>
 <body>
-  <div class="header">
-    <div class="logo">
-      <i class="fa-solid fa-car-side"></i> P2P Car Rental
-    </div>
-    <div class="subtitle">Safe and Convenient Peer-to-Peer Car Rental Platform</div>
-  </div>
-  <div class="container">
-    <div id="userInfo" class="user-info">
-      <p>Loading user information...</p>
-    </div>
-    <div class="process-bar">
-      <div class="process-step active">
-        <span class="icon"><i class="fa-solid fa-user-plus"></i></span>
-        Register
-      </div>
-      <div class="process-step">
-        <span class="icon"><i class="fa-solid fa-search"></i></span>
-        Search
-      </div>
-      <div class="process-step">
-        <span class="icon"><i class="fa-solid fa-calendar-check"></i></span>
-        Book
-      </div>
-      <div class="process-step">
-        <span class="icon"><i class="fa-solid fa-credit-card"></i></span>
-        Payment
-      </div>
-      <div class="process-step">
-        <span class="icon"><i class="fa-solid fa-car"></i></span>
-        Return
+  <header class="nav">
+    <div class="nav-left">
+      <div class="nav-logo"><i class="fa-solid fa-car-side"></i></div>
+      <div>
+        <div class="nav-title">P2P CAR RENTAL</div>
+        <div style="font-size:11px;color:#9ca3af;">Hong Kong · Peer‑to‑Peer</div>
       </div>
     </div>
-    <div id="processSteps">
-      <div class="step-card">
-        <div class="step-icon"><i class="fa-solid fa-user-plus"></i></div>
-        <div class="step-content">
-          <h2>1. Register Account</h2>
-          <p>Fill in your personal information to become a platform user.</p>
-          <button class="primary-btn" onclick="location.href='register.html'">Register Now</button>
+    <div class="nav-right">
+      <a href="javascript:void(0)" class="nav-link" onclick="scrollToFlows()">
+        Renter / Owner 流程
+      </a>
+      <button class="btn btn-outline" onclick="location.href='login.html'">
+        登入
+      </button>
+      <button class="btn btn-primary" onclick="location.href='register.html'">
+        立即註冊
+      </button>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div>
+        <div class="hero-kicker">香港最方便的 P2P 租車平台</div>
+        <h1>用香港人的方式，在香港租車。</h1>
+        <p>以 HK$ 計價、支援本地常用支付方式，連接需要用車的 Renter 與有車閒置的 Owner，一個平台完成搜尋、保險、付款到取還車。</p>
+        <div class="hero-highlight">
+          <i class="fa-solid fa-shield-heart"></i>
+          本地化保險選擇 · 清晰免賠額與條款（示意）
+        </div>
+        <div class="hero-actions">
+          <button class="btn btn-primary" onclick="location.href='register.html'">
+            <i class="fa-solid fa-user-plus"></i>
+            免費註冊帳戶
+          </button>
+          <button class="btn btn-outline" onclick="location.href='login.html'">
+            <i class="fa-solid fa-right-to-bracket"></i>
+            我已經有帳戶
+          </button>
+        </div>
+        <div class="hero-trust">
+          <span><i class="fa-solid fa-star"></i> 4.9/5 用戶評分（示意數據）</span>
+          <span><i class="fa-solid fa-car-side"></i> 10,000+ 次成功租車（示意數據）</span>
+          <span><i class="fa-solid fa-shield-halved"></i> HK$5M 公共責任保障（示意）</span>
         </div>
       </div>
-      <div class="step-card">
-        <div class="step-icon"><i class="fa-solid fa-search"></i></div>
-        <div class="step-content">
-          <h2>2. Search Vehicles</h2>
-          <p>Filter available vehicles by type, price, and other criteria.</p>
-          <button class="primary-btn" onclick="location.href='search.html'">Search Vehicles</button>
+
+      <aside class="hero-card" id="flows">
+        <div class="switcher">
+          <button class="switch-pill active" id="tab-renter" onclick="switchFlow('renter')">
+            <i class="fa-solid fa-user"></i> Renter 租車流程
+          </button>
+          <button class="switch-pill" id="tab-owner" onclick="switchFlow('owner')">
+            <i class="fa-solid fa-key"></i> Owner 出租流程
+          </button>
+        </div>
+        <div id="flow-renter" class="flow">
+          <div class="flow-step">
+            <div class="flow-icon"><i class="fa-solid fa-magnifying-glass"></i></div>
+            <div class="flow-body">
+              <h3>1. 搜車 Search</h3>
+              <p>輸入日期、地點與預算，快速搜尋全港可用車輛，HK$ 價格一目了然。</p>
+            </div>
+          </div>
+          <div class="flow-step">
+            <div class="flow-icon"><i class="fa-solid fa-car-side"></i></div>
+            <div class="flow-body">
+              <h3>2. 選車 Select</h3>
+              <p>查看車款相片、里數、變速箱與特色（如 Apple CarPlay），再按評價決定。</p>
+            </div>
+          </div>
+          <div class="flow-step">
+            <div class="flow-icon"><i class="fa-solid fa-shield-heart"></i></div>
+            <div class="flow-body">
+              <h3>3. 保險 Insurance</h3>
+              <p>從基本保障至全保方案，一張卡片清楚列出保障範圍、免賠額與不保項目。</p>
+            </div>
+          </div>
+          <div class="flow-step">
+            <div class="flow-icon"><i class="fa-solid fa-credit-card"></i></div>
+            <div class="flow-body">
+              <h3>4. 付款 Pay</h3>
+              <p>以 HK$ 結算，支援 Visa / Mastercard / UnionPay、FPS、Apple Pay、AlipayHK 等。</p>
+            </div>
+          </div>
+          <div class="flow-step">
+            <div class="flow-icon"><i class="fa-solid fa-location-dot"></i></div>
+            <div class="flow-body">
+              <h3>5. 取還車 Pick‑up & Return</h3>
+              <p>於港鐵站、機場或自訂地點交收，還車後在 Dashboard 查看完整訂單歷史。</p>
+            </div>
+          </div>
+          <div class="flow-footer">
+            <span class="badge-soft">登入後首頁：Renter Dashboard，集中顯示「我的租車」</span>
+            <a href="login.html" style="font-size:11px;color:#0369a1;">
+              立即登入查看示範流程 →
+            </a>
+          </div>
+        </div>
+
+        <div id="flow-owner" class="flow" style="display:none;">
+          <div class="flow-step">
+            <div class="flow-icon"><i class="fa-solid fa-id-card"></i></div>
+            <div class="flow-body">
+              <h3>1. 成為 Owner</h3>
+              <p>註冊並完成實名驗證，在 Owner Dashboard 新增車輛資料與相片。</p>
+            </div>
+          </div>
+          <div class="flow-step">
+            <div class="flow-icon"><i class="fa-solid fa-car"></i></div>
+            <div class="flow-body">
+              <h3>2. 設定出租條件</h3>
+              <p>設定每日 HK$ 租金、取車地點、可出租日期與是否支援長租。</p>
+            </div>
+          </div>
+          <div class="flow-step">
+            <div class="flow-icon"><i class="fa-solid fa-message"></i></div>
+            <div class="flow-body">
+              <h3>3. 接單與確認</h3>
+              <p>收到 Renter 預訂後可在 Dashboard 接受或拒絕，系統自動檢查車輛可用性。</p>
+            </div>
+          </div>
+          <div class="flow-step">
+            <div class="flow-icon"><i class="fa-solid fa-handshake"></i></div>
+            <div class="flow-body">
+              <h3>4. 交收與還車</h3>
+              <p>按系統記錄的時間與地點交收，還車後查看每月收入統計與評價。</p>
+            </div>
+          </div>
+          <div class="flow-footer">
+            <span class="badge-soft">Owner Dashboard：車輛管理、租單與收入一頁完成</span>
+            <a href="register.html" style="font-size:11px;color:#0369a1;">
+              立即註冊為 Owner →
+            </a>
+          </div>
+        </div>
+      </aside>
+    </section>
+
+    <section class="section">
+      <h2>為什麼是 P2P，而不是傳統租車？</h2>
+      <p>我們希望讓有需要短期用車的香港人，用最熟悉的方式找到車；同時讓車主把閒置車位變成穩定收入來源。</p>
+      <div class="grid-2">
+        <article class="value-card">
+          <h3><i class="fa-solid fa-user"></i> 對 Renter · 彈性、透明、本地化</h3>
+          <p>無需長約、無隱藏費用，所有金額以 HK$ 顯示，保險與條款以簡單中文解釋。</p>
+          <ul class="mini-list">
+            <li>支援常見電子支付（FPS、Apple Pay、AlipayHK 等）</li>
+            <li>Dashboard 顯示進行中、即將到期與歷史訂單</li>
+            <li>清楚列出車輛里程、變速箱、油耗與特色配備</li>
+          </ul>
+        </article>
+        <article class="value-card">
+          <h3><i class="fa-solid fa-key"></i> 對 Owner · 安全、穩定、可控</h3>
+          <p>完整的租單與收入報表，配合平台審核與保險機制，讓你安心把車放上平台。</p>
+          <ul class="mini-list">
+            <li>可自由設定每日 HK$ 價格與可出租時段</li>
+            <li>Owner Dashboard 顯示所有車輛與狀態（available / rented / maintenance）</li>
+            <li>系統支援延長租期與額外付款流程（需 Owner 同意）</li>
+          </ul>
+        </article>
+      </div>
+
+      <div class="stats-strip">
+        <div class="stat-item">
+          <div class="stat-label">示意 · 已完成租車</div>
+          <div class="stat-value">10,000+</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-label">平均評分</div>
+          <div class="stat-value">4.9 / 5.0</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-label">平台覆蓋地區</div>
+          <div class="stat-value">港九新界 常用地點</div>
         </div>
       </div>
-      <div class="step-card">
-        <div class="step-icon"><i class="fa-solid fa-calendar-check"></i></div>
-        <div class="step-content">
-          <h2>3. Confirm Booking</h2>
-          <p>Select your preferred vehicle, choose rental dates, and submit your order.</p>
-          <button class="primary-btn" onclick="location.href='rent.html'">Book Now</button>
-        </div>
-      </div>
-      <div class="step-card">
-        <div class="step-icon"><i class="fa-solid fa-credit-card"></i></div>
-        <div class="step-content">
-          <h2>4. Payment</h2>
-          <p>Fill in payment information and complete your order payment.</p>
-          <button class="primary-btn" onclick="location.href='pay.html'">Make Payment</button>
-        </div>
-      </div>
-      <div class="step-card">
-        <div class="step-icon"><i class="fa-solid fa-car"></i></div>
-        <div class="step-content">
-          <h2>5. Return Vehicle</h2>
-          <p>Return the vehicle after the rental period to complete the process.</p>
-          <button class="primary-btn" onclick="location.href='return.html'">Return Vehicle</button>
-        </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+      <div>© 2024 P2P Car Rental · Hong Kong</div>
+      <div class="footer-links">
+        <a href="mailto:support@p2pcarrental.com">聯絡我們</a>
+        <span>·</span>
+        <a href="#">服務條款（示意）</a>
+        <span>·</span>
+        <a href="#">私隱政策（示意）</a>
       </div>
     </div>
-  </div>
-  <div class="footer">
-    &copy; 2024 P2P Car Rental | Safe Peer-to-Peer Car Rental Platform | <a href="mailto:support@p2pcarrental.com" style="color:#007bff;text-decoration:none;">Contact Us</a>
-  </div>
-  <script src="config.js"></script>
+  </footer>
+
   <script>
-    // Check user login status when page loads
-    window.onload = function() {
-      const userId = localStorage.getItem('user_id');
-      const userInfoDiv = document.getElementById('userInfo');
-      
-      if (userId) {
-        // User is logged in, display user info and logout button
-        fetch(`${API_BASE}/user/${userId}`)
-          .then(response => response.json())
-          .then(user => {
-            if (user.user_id) {
-              userInfoDiv.innerHTML = `
-                <p><strong>Welcome back!</strong></p>
-                <p>User ID: ${user.user_id} | Name: ${user.name} | Type: ${user.userType === 'renter' ? 'Renter' : 'Owner'}</p>
-                <button class="logout-btn" onclick="logout()">Logout</button>
-              `;
-            } else {
-              showNotLoggedIn();
-            }
-          })
-          .catch(error => {
-            console.error('Error fetching user info:', error);
-            showNotLoggedIn();
-          });
+    function switchFlow(type) {
+      const renterTab = document.getElementById('tab-renter');
+      const ownerTab = document.getElementById('tab-owner');
+      const renterFlow = document.getElementById('flow-renter');
+      const ownerFlow = document.getElementById('flow-owner');
+
+      if (type === 'owner') {
+        ownerTab.classList.add('active');
+        renterTab.classList.remove('active');
+        ownerFlow.style.display = 'flex';
+        renterFlow.style.display = 'none';
       } else {
-        showNotLoggedIn();
+        renterTab.classList.add('active');
+        ownerTab.classList.remove('active');
+        renterFlow.style.display = 'flex';
+        ownerFlow.style.display = 'none';
       }
-    };
-
-    function showNotLoggedIn() {
-      const userInfoDiv = document.getElementById('userInfo');
-      userInfoDiv.innerHTML = `
-        <p>You are not logged in</p>
-        <button class="primary-btn" onclick="location.href='login.html'">Login Now</button>
-        <button class="secondary-btn" onclick="location.href='register.html'">Create Account</button>
-      `;
     }
 
-    function logout() {
-      localStorage.removeItem('user_id');
-      localStorage.removeItem('renter_id');
-      alert('You have been logged out');
-      location.reload(); 
+    function scrollToFlows() {
+      const el = document.getElementById('flows');
+      if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
     }
+
+    // 若使用者已登入，從公開首頁自動導向對應的 dashboard
+    window.addEventListener('load', function () {
+      try {
+        const userId = localStorage.getItem('user_id');
+        const userType = localStorage.getItem('user_type');
+        if (!userId) return;
+        if (userType === 'owner') {
+          window.location.href = 'ownerDashboard.html';
+        } else {
+          window.location.href = 'renter-dashboard.html';
+        }
+      } catch (e) {
+        // 本地 storage 讀取失敗時，不阻止使用者瀏覽 landing
+        console.error('redirect error', e);
+      }
+    });
   </script>
 </body>
 </html>
