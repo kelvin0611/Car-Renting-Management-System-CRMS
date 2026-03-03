@@ -183,15 +183,36 @@ def search_vehicles():
         carType = request.args.get('carType')
         min_price = request.args.get('min_price')
         max_price = request.args.get('max_price')
+        start_date = request.args.get('start_date')  # yyyy-mm-dd
+        end_date = request.args.get('end_date')      # yyyy-mm-dd
         
         db = get_db()
         cursor = db.cursor(dictionary=True)
         
-        # Use case-insensitive status check
-        sql = "SELECT * FROM Vehicle WHERE LOWER(status) = 'available'"
-        
+        sql = "SELECT * FROM Vehicle WHERE 1=1"
         filters = []
         params = []
+
+        # 若有提供日期區間，依據租期判斷是否被佔用，而不是只看當前 status
+        if start_date and end_date:
+            start_dt = start_date.strip() + " 00:00:00"
+            end_dt = end_date.strip() + " 23:59:59"
+            # 僅排除在該時段內已被有效訂單佔用的車輛（排除已取消的訂單）
+            filters.append("""
+NOT EXISTS (
+  SELECT 1 FROM Rental r
+  WHERE r.vehicle_id = Vehicle.vehicle_id
+    AND r.orderStatus <> 'cancelled'
+    AND r.rentalStartTime < %s
+    AND r.rentalEndTime > %s
+)
+""")
+            params.extend([end_dt, start_dt])
+            # 仍可保留僅顯示「正常上架」車輛（例如 available / rented），避免已下架的車
+            filters.append("LOWER(status) IN ('available', 'rented')")
+        else:
+            # 沒選日期時，維持原本行為：只顯示目前標記為 available 的車
+            filters.append("LOWER(status) = 'available'")
         
         if carType:
             filters.append("carType LIKE %s")

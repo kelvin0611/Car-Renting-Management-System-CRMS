@@ -9,6 +9,10 @@
             margin: 20px; 
             background-color: #f5f5f5;
         }
+
+        function openTerms(insuranceId) {
+            alert('完整保險條款將於日後由保險公司提供，目前僅供示意。方案 ID：' + (insuranceId || 'N/A'));
+        }
         .container {
             max-width: 800px;
             margin: 0 auto;
@@ -162,26 +166,26 @@
         </div>
 
         <div id="calculationInfo" class="calculation hidden">
-            <h4>Cost Calculation</h4>
+            <h4>費用試算</h4>
             <div class="calculation-item">
-                <span>Daily Vehicle Rental:</span>
-                <span id="dailyPrice">$0</span>
+                <span>每日車租：</span>
+                <span id="dailyPrice">HK$0</span>
             </div>
             <div class="calculation-item">
-                <span>Rental Days:</span>
+                <span>租期（日）：</span>
                 <span id="rentalDays">0</span>
             </div>
             <div class="calculation-item">
-                <span>Vehicle Rental Cost:</span>
-                <span id="baseAmount">$0</span>
+                <span>車輛租金小計：</span>
+                <span id="baseAmount">HK$0</span>
             </div>
             <div class="calculation-item">
-                <span>Insurance Fee:</span>
-                <span id="insuranceAmount">$0</span>
+                <span>保險費：</span>
+                <span id="insuranceAmount">HK$0</span>
             </div>
             <div class="calculation-item calculation-total">
-                <span>Total Amount:</span>
-                <span id="totalAmount">$0</span>
+                <span>預估總金額：</span>
+                <span id="totalAmount">HK$0</span>
             </div>
         </div>
 
@@ -241,16 +245,16 @@
                 <h3>${vehicle.carType} - ${vehicle.brand || ''} ${vehicle.model || ''}</h3>
                 <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-top: 15px;">
                     <div>
-                        <strong>Year:</strong> ${vehicle.year || 'Unknown'}
+                        <strong>年份：</strong> ${vehicle.year || '未知'}
                     </div>
                     <div>
-                        <strong>Seats:</strong> ${vehicle.seatNum || 'Unknown'} seats
+                        <strong>座位數：</strong> ${vehicle.seatNum || '未知'} 座
                     </div>
                     <div>
-                        <strong>Daily Rate:</strong> $${vehicle.dailyPrice}
+                        <strong>日租金：</strong> HK$${vehicle.dailyPrice}
                     </div>
                     <div>
-                        <strong>Location:</strong> ${vehicle.location || 'Unknown'}
+                        <strong>取車地點：</strong> ${vehicle.location || '待確認'}
                     </div>
                 </div>
             `;
@@ -293,18 +297,29 @@
             
             const allOptions = [noInsuranceOption, ...insurances];
             
-            insuranceListDiv.innerHTML = allOptions.map(insurance => `
+                insuranceListDiv.innerHTML = allOptions.map(insurance => `
                 <div class="insurance-card" onclick="selectInsurance(${insurance.insurance_id || 'null'})" id="insurance-${insurance.insurance_id || 'none'}">
                     <div class="insurance-header">
                         <span class="insurance-type">${insurance.types}</span>
-                        <span class="insurance-fee">$${insurance.fee}</span>
+                        <span class="insurance-fee">HK$${insurance.fee} / 日</span>
                     </div>
                     <div class="insurance-details">
-                        <p><strong>Validity Period:</strong> ${insurance.validityPeriod}</p>
-                        <p><strong>Coverage:</strong> ${insurance.description || 'Standard coverage'}</p>
+                        <p><strong>保障期：</strong> ${insurance.validityPeriod}</p>
+                        <p><strong>保障範圍重點：</strong></p>
+                        <ul>
+                            ${(insurance.description || '第三者責任、車身損毀等基本保障')
+                                .split(/[;；\n]/)
+                                .filter(Boolean)
+                                .slice(0,5)
+                                .map(item => `<li>${item.trim()}</li>`).join('')}
+                        </ul>
+                        <p><strong>主要免賠額：</strong> ${insurance.deductible || '請參閱完整條款'}</p>
+                        <p><strong>重要提醒：</strong> ${insurance.importantNotes || '某些高風險情況或違規行為不在保障範圍內，詳情請閱讀完整條款。'}</p>
                     </div>
                     <div class="insurance-company">
-                        Insurance Company: ${insurance.company}
+                        承保公司：${insurance.company}
+                        <br>
+                        <a href="#" onclick="openTerms('${insurance.insurance_id || ''}'); return false;">查看完整條款</a>
                     </div>
                 </div>
             `).join('');
@@ -344,18 +359,18 @@
                 const selectedCard = document.getElementById(`insurance-${selectedInsurance}`);
                 if (selectedCard) {
                     const feeText = selectedCard.querySelector('.insurance-fee').textContent;
-                    insuranceFee = parseFloat(feeText.replace('$', ''));
+                    insuranceFee = parseFloat(feeText.replace('HK$', '').replace('/ 日', ''));
                 }
             }
             
             const totalAmount = baseAmount + insuranceFee;
             
             // Update display
-            document.getElementById('dailyPrice').textContent = `$${dailyPrice}`;
+            document.getElementById('dailyPrice').textContent = `HK$${dailyPrice}`;
             document.getElementById('rentalDays').textContent = rentalDays;
-            document.getElementById('baseAmount').textContent = `$${baseAmount.toFixed(2)}`;
-            document.getElementById('insuranceAmount').textContent = `$${insuranceFee.toFixed(2)}`;
-            document.getElementById('totalAmount').textContent = `$${totalAmount.toFixed(2)}`;
+            document.getElementById('baseAmount').textContent = `HK$${baseAmount.toFixed(2)}`;
+            document.getElementById('insuranceAmount').textContent = `HK$${insuranceFee.toFixed(2)}`;
+            document.getElementById('totalAmount').textContent = `HK$${totalAmount.toFixed(2)}`;
             
             // Show calculation info
             document.getElementById('calculationInfo').classList.remove('hidden');
@@ -367,7 +382,7 @@
 
         // Continue to rental page
         function continueToRental() {
-            if (!selectedInsurance && !confirm('You have chosen not to purchase insurance. Are you sure you want to continue?')) {
+            if (!selectedInsurance && !confirm('你選擇「不購買保險」。確定要繼續嗎？')) {
                 return;
             }
             

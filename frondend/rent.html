@@ -205,6 +205,84 @@
       gap: 15px;
       margin-top: 15px;
     }
+
+    .map-panel {
+      background: #fff;
+      padding: 18px;
+      border-radius: 10px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+      margin-top: 18px;
+      border: 1px solid #e6e6e6;
+    }
+    .map-panel h4 {
+      margin: 0 0 10px 0;
+      color: #0f172a;
+    }
+    .map-hint {
+      font-size: 13px;
+      color: #64748b;
+      line-height: 1.4;
+      margin: 6px 0 12px 0;
+    }
+    .map-grid {
+      display: grid;
+      grid-template-columns: 1fr 320px;
+      gap: 14px;
+      align-items: start;
+    }
+    @media (max-width: 900px) {
+      .map-grid { grid-template-columns: 1fr; }
+    }
+    #mapCanvas {
+      width: 100%;
+      height: 320px;
+      border-radius: 10px;
+      overflow: hidden;
+      background: #f1f5f9;
+      border: 1px solid #e2e8f0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #64748b;
+      font-size: 14px;
+    }
+    .map-side {
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 10px;
+      padding: 12px;
+    }
+    .chip-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin: 8px 0 10px 0;
+    }
+    .chip {
+      border: 1px solid #cbd5e1;
+      background: #fff;
+      color: #0f172a;
+      border-radius: 999px;
+      padding: 6px 10px;
+      font-size: 13px;
+      cursor: pointer;
+    }
+    .inline-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+    .small-label {
+      font-size: 12px;
+      color: #475569;
+      font-weight: 600;
+      margin: 8px 0 6px 0;
+    }
+    .tiny {
+      font-size: 12px;
+      color: #64748b;
+      margin-top: 6px;
+    }
     .footer {
       background: #222;
       color: #eee;
@@ -292,27 +370,71 @@
           <input type="text" id="dropoffLocation" name="dropoffLocation" placeholder="Enter drop-off location" required>
         </div>
 
+        <div class="map-panel">
+          <h4><i class="fa-solid fa-map-location-dot"></i> 取還車地點（地圖選點草稿）</h4>
+          <div class="map-hint">
+            - 若你之後在 `config.js` 提供 Google Maps API Key（例如 `window.GOOGLE_MAPS_API_KEY`），本頁會自動啟用「點擊地圖落點」功能。<br>
+            - 未提供 Key 的情況下，仍可用右側快捷地點或手動輸入座標／地址（先把流程跑通）。
+          </div>
+          <div class="map-grid">
+            <div id="mapCanvas">
+              地圖載入中…
+            </div>
+            <div class="map-side">
+              <div class="small-label">常用地點快捷選項</div>
+              <div class="chip-row">
+                <button type="button" class="chip" onclick="applyPreset('HKIA')">機場（HKIA）</button>
+                <button type="button" class="chip" onclick="applyPreset('Central')">港鐵中环</button>
+                <button type="button" class="chip" onclick="applyPreset('WestKowloon')">西九龙高铁站</button>
+                <button type="button" class="chip" onclick="applyPreset('TST')">尖沙咀</button>
+              </div>
+
+              <div class="small-label">将地图点位套用到</div>
+              <div class="chip-row">
+                <button type="button" class="chip" onclick="setTargetField('pickup')">取车</button>
+                <button type="button" class="chip" onclick="setTargetField('dropoff')">还车</button>
+              </div>
+
+              <div class="small-label">手动输入（lat,lng）</div>
+              <div class="inline-grid">
+                <input type="text" id="manualLat" placeholder="lat，例如 22.3080">
+                <input type="text" id="manualLng" placeholder="lng，例如 113.9185">
+              </div>
+              <div class="chip-row" style="margin-top:10px;">
+                <button type="button" class="chip" onclick="applyManualLatLng()">套用座標</button>
+                <button type="button" class="chip" onclick="openGoogleMaps()">打开 Google 地图</button>
+              </div>
+              <div class="chip-row" style="margin-top:4px;">
+                <button type="button" class="chip" onclick="geocodeFromInput()">用目前輸入地址定位到地圖</button>
+              </div>
+              <div class="tiny">
+                说明：目前会把坐标附加到输入框末尾，例如「地址 (22.3080, 113.9185)」。
+              </div>
+            </div>
+          </div>
+        </div>
+
         <div id="calculationInfo" class="calculation hidden">
-          <h4>Cost Calculation</h4>
+          <h4>費用試算</h4>
           <div class="calculation-item">
-            <span>Rental Days:</span>
+            <span>租期（日）：</span>
             <span id="rentalDays">0</span>
           </div>
           <div class="calculation-item">
-            <span>Daily Price:</span>
-            <span id="dailyPrice">$0</span>
+            <span>每日車租：</span>
+            <span id="dailyPrice">HK$0</span>
           </div>
           <div class="calculation-item">
-            <span>Vehicle Rental:</span>
-            <span id="baseAmount">$0</span>
+            <span>車輛租金小計：</span>
+            <span id="baseAmount">HK$0</span>
           </div>
           <div class="calculation-item" id="insuranceItem" style="display: none;">
-            <span>Insurance Fee:</span>
-            <span id="insuranceAmount">$0</span>
+            <span>保險費：</span>
+            <span id="insuranceAmount">HK$0</span>
           </div>
           <div class="calculation-item calculation-total">
-            <span>Total Amount:</span>
-            <span id="totalAmount">$0</span>
+            <span>預估總金額：</span>
+            <span id="totalAmount">HK$0</span>
           </div>
         </div>
 
@@ -374,10 +496,157 @@
       // Add date change listeners
       document.getElementById('rentalStartTime').addEventListener('change', calculateRental);
       document.getElementById('rentalEndTime').addEventListener('change', calculateRental);
+
+      // Init map UI (progressive enhancement)
+      initMapUI();
       
       // Set form submission event
       document.getElementById('rentalForm').onsubmit = handleRentalSubmit;
     };
+
+    let locationTarget = 'pickup';
+    let mapState = {
+      lat: 22.3193,
+      lng: 114.1694,
+      label: '香港',
+    };
+    let gMap = null;
+    let gMarker = null;
+    let gGeocoder = null;
+
+    function setTargetField(target) {
+      locationTarget = target === 'dropoff' ? 'dropoff' : 'pickup';
+    }
+
+    function applyPreset(key) {
+      const presets = {
+        HKIA: { lat: 22.3080, lng: 113.9185, label: '香港国际机场 HKIA' },
+        Central: { lat: 22.2819, lng: 114.1586, label: '港铁中环站 Central' },
+        WestKowloon: { lat: 22.3049, lng: 114.1660, label: '西九龙高铁站 West Kowloon' },
+        TST: { lat: 22.2973, lng: 114.1722, label: '尖沙咀 Tsim Sha Tsui' },
+      };
+      const p = presets[key];
+      if (!p) return;
+      mapState = { ...p };
+      updateMapPreview();
+      writeLocationFromMapState();
+    }
+
+    function applyManualLatLng() {
+      const lat = parseFloat(document.getElementById('manualLat').value);
+      const lng = parseFloat(document.getElementById('manualLng').value);
+      if (!Number.isFinite(lat) || !Number.isFinite(lng)) {
+        alert('请输入正确的 lat / lng（数字）。');
+        return;
+      }
+      mapState = { lat, lng, label: '自定义坐标' };
+      updateMapPreview();
+      writeLocationFromMapState();
+    }
+
+    function writeLocationFromMapState() {
+      const fieldId = locationTarget === 'dropoff' ? 'dropoffLocation' : 'pickupLocation';
+      const input = document.getElementById(fieldId);
+      const base = (input.value || '').replace(/\s*\([\d\.\-]+\s*,\s*[\d\.\-]+\)\s*$/, '').trim();
+      const next = (base ? base + ' ' : '') + '(' + mapState.lat.toFixed(4) + ', ' + mapState.lng.toFixed(4) + ')';
+      input.value = next;
+    }
+
+    function openGoogleMaps() {
+      const q = mapState.lat + ',' + mapState.lng;
+      window.open('https://www.google.com/maps?q=' + encodeURIComponent(q), '_blank');
+    }
+
+    function updateMapPreview() {
+      // No API key required: use Google Maps embed URL for preview
+      const mapCanvas = document.getElementById('mapCanvas');
+      const q = mapState.lat + ',' + mapState.lng;
+      mapCanvas.innerHTML =
+        '<iframe ' +
+        'title="map" ' +
+        'width="100%" height="320" style="border:0;border-radius:10px;" loading="lazy" allowfullscreen ' +
+        'referrerpolicy="no-referrer-when-downgrade" ' +
+        'src="https://www.google.com/maps?q=' + encodeURIComponent(q) + '&z=14&output=embed">' +
+        '</iframe>';
+    }
+
+    function initMapUI() {
+      // Default: embed preview works without key
+      updateMapPreview();
+
+      // Optional: if you provide window.GOOGLE_MAPS_API_KEY, enable click-to-drop-pin map.
+      if (window.GOOGLE_MAPS_API_KEY) {
+        loadGoogleMapsScript(window.GOOGLE_MAPS_API_KEY)
+          .then(() => initInteractiveGoogleMap())
+          .catch(() => {
+            // Fallback to embed
+          });
+      }
+    }
+
+    function loadGoogleMapsScript(apiKey) {
+      return new Promise((resolve, reject) => {
+        if (window.google && window.google.maps) return resolve();
+        const script = document.createElement('script');
+        script.src = 'https://maps.googleapis.com/maps/api/js?key=' + encodeURIComponent(apiKey);
+        script.async = true;
+        script.onload = resolve;
+        script.onerror = reject;
+        document.head.appendChild(script);
+      });
+    }
+
+    function initInteractiveGoogleMap() {
+      const mapCanvas = document.getElementById('mapCanvas');
+      mapCanvas.innerHTML = '';
+      gMap = new google.maps.Map(mapCanvas, {
+        center: { lat: mapState.lat, lng: mapState.lng },
+        zoom: 13,
+      });
+      gMarker = new google.maps.Marker({
+        position: { lat: mapState.lat, lng: mapState.lng },
+        map: gMap,
+      });
+      gGeocoder = new google.maps.Geocoder();
+
+      gMap.addListener('click', (e) => {
+        const lat = e.latLng.lat();
+        const lng = e.latLng.lng();
+        mapState = { lat, lng, label: '地图点选' };
+        gMarker.setPosition({ lat, lng });
+        writeLocationFromMapState();
+      });
+    }
+
+    function geocodeFromInput() {
+      const fieldId = locationTarget === 'dropoff' ? 'dropoffLocation' : 'pickupLocation';
+      const input = document.getElementById(fieldId);
+      const raw = (input.value || '').trim();
+      if (!raw) {
+        alert('請先在輸入框填寫大約地址，例如區域或街道名稱。');
+        return;
+      }
+      // 如果沒有 Maps JS，就直接用網址打開 Google Maps 搜尋
+      if (!(window.google && window.google.maps && gGeocoder)) {
+        window.open('https://www.google.com/maps/search/' + encodeURIComponent(raw), '_blank');
+        return;
+      }
+      gGeocoder.geocode({ address: raw }, (results, status) => {
+        if (status !== 'OK' || !results || !results[0]) {
+          alert('找不到對應位置，請嘗試輸入更詳細地址。');
+          return;
+        }
+        const loc = results[0].geometry.location;
+        mapState = {
+          lat: loc.lat(),
+          lng: loc.lng(),
+          label: results[0].formatted_address || raw,
+        };
+        gMap.setCenter(loc);
+        gMarker.setPosition(loc);
+        writeLocationFromMapState();
+      });
+    }
 
     function logout() {
       localStorage.removeItem('user_id');
@@ -446,7 +715,7 @@
           </div>
           <div class="detail-item">
             <span class="detail-label">Daily Price:</span>
-            <span>$${vehicle.dailyPrice}</span>
+            <span>HK$${vehicle.dailyPrice}</span>
           </div>
           <div class="detail-item">
             <span class="detail-label">Location:</span>
@@ -481,7 +750,7 @@
         </div>
         <div class="detail-item">
           <span class="detail-label">Insurance Fee:</span>
-          <span>$${insurance.fee}</span>
+          <span>HK$${insurance.fee}</span>
         </div>
         <div class="detail-item">
           <span class="detail-label">Validity Period:</span>
@@ -559,17 +828,17 @@
       
       // Display calculation results
       document.getElementById('rentalDays').textContent = rentalDays;
-      document.getElementById('dailyPrice').textContent = `$${dailyPrice}`;
-      document.getElementById('baseAmount').textContent = `$${baseAmount.toFixed(2)}`;
+      document.getElementById('dailyPrice').textContent = `HK$${dailyPrice}`;
+      document.getElementById('baseAmount').textContent = `HK$${baseAmount.toFixed(2)}`;
       
       if (insuranceFee > 0) {
         document.getElementById('insuranceItem').style.display = 'flex';
-        document.getElementById('insuranceAmount').textContent = `$${insuranceFee.toFixed(2)}`;
+        document.getElementById('insuranceAmount').textContent = `HK$${insuranceFee.toFixed(2)}`;
       } else {
         document.getElementById('insuranceItem').style.display = 'none';
       }
       
-      document.getElementById('totalAmount').textContent = `$${totalAmount.toFixed(2)}`;
+      document.getElementById('totalAmount').textContent = `HK$${totalAmount.toFixed(2)}`;
       document.getElementById('calculationInfo').classList.remove('hidden');
       
       // Clear error message

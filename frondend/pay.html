@@ -238,27 +238,29 @@
       </div>
       <form id="paymentForm">
         <div class="form-group">
-          <label>Payment Amount:</label>
+          <label>Payment Amount (HK$):</label>
           <input type="text" id="paymentAmount" readonly style="background-color: #e9ecef;">
         </div>
         <div class="form-group">
           <label>Payment Method:</label>
           <select name="paymentMethod" required>
             <option value="">Select Payment Method</option>
-            <option value="credit_card">Credit Card</option>
-            <option value="debit_card">Debit Card</option>
-            <option value="paypal">PayPal</option>
-            <option value="bank_transfer">Bank Transfer</option>
+            <option value="credit_card">信用卡（Visa / Mastercard / UnionPay）</option>
+            <option value="fps">FPS 轉數快</option>
+            <option value="apple_pay">Apple Pay</option>
+            <option value="google_pay">Google Pay</option>
+            <option value="alipay_hk">AlipayHK</option>
+            <option value="wechat_pay_hk">WeChat Pay HK</option>
           </select>
         </div>
         <div class="form-group">
-          <label>Transaction Number:</label>
-          <input type="text" name="TransactionNumber" placeholder="Enter transaction reference number" required>
+          <label>Transaction Reference No.:</label>
+          <input type="text" name="TransactionNumber" placeholder="輸入交易參考號碼" required>
           <small style="color: #666; display: block; margin-top: 5px;">
-            Please enter the appropriate transaction reference number based on your payment method:
-            <br>• Credit/Debit Card: Enter transaction authorization code
-            <br>• PayPal: Enter PayPal transaction ID
-            <br>• Bank Transfer: Enter bank transfer reference number
+            請按所選支付方式輸入對應的參考編號：
+            <br>• 信用卡 / Apple Pay / Google Pay：輸入授權碼或交易編號
+            <br>• FPS：輸入銀行／錢包提供的轉數快參考編號
+            <br>• AlipayHK / WeChat Pay HK：輸入應用程式顯示的交易編號
           </small>
         </div>
         <button type="submit">Confirm Payment</button>
@@ -306,7 +308,7 @@
       // Display payment information
       displayPaymentInfo(rentalId, rentalAmount);
       
-      document.getElementById('paymentAmount').value = `$${rentalAmount}`;
+      document.getElementById('paymentAmount').value = `HK$${rentalAmount}`;
     };
 
     // Logout function
@@ -339,7 +341,7 @@
             </div>
             <div class="detail-row">
               <span class="detail-label">Daily Rate:</span>
-              <span class="detail-value">$${vehicleInfo.dailyPrice || 'Unknown'}</span>
+              <span class="detail-value">HK$${vehicleInfo.dailyPrice || 'Unknown'}</span>
             </div>
             ${vehicleInfo.location ? `
             <div class="detail-row">
@@ -354,7 +356,7 @@
       
       document.getElementById('paymentInfo').innerHTML = `
         <h3>Rental Order #${rentalId}</h3>
-        <p><strong>Payment Amount:</strong> $${rentalAmount}</p>
+        <p><strong>Payment Amount:</strong> HK$${rentalAmount}</p>
         <p><strong>Order Status:</strong> Pending Payment</p>
         ${vehicleHtml}
       `;

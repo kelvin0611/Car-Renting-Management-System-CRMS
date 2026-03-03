@@ -378,7 +378,7 @@
             const endDate = new Date(rental.rentalEndTime).toLocaleString();
             
             const statusClass = `status-${rental.orderStatus}`;
-            const insuranceText = rental.insurance_type ? `${rental.insurance_type} ($${rental.insurance_fee})` : 'None';
+            const insuranceText = rental.insurance_type ? `${rental.insurance_type} (HK$${rental.insurance_fee})` : 'None';
             
             detailsDiv.innerHTML = `
                 <div class="rental-details">
@@ -408,7 +408,7 @@
                     </div>
                     <div class="detail-item">
                         <span class="detail-label">Total Amount:</span>
-                        <span>$${rental.totalAmount}</span>
+                        <span>HK$${rental.totalAmount}</span>
                     </div>
                     <div class="detail-item">
                         <span class="detail-label">Order Status:</span>
@@ -512,7 +512,7 @@
                         </div>
                         <div class="detail-item">
                             <span class="detail-label">Total Amount:</span>
-                            <span>$${rental.totalAmount}</span>
+                            <span>HK$${rental.totalAmount}</span>
                         </div>
                         <div class="detail-item">
                             <span class="detail-label">Order Status:</span>
@@ -524,7 +524,9 @@
                         </div>
                         <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:12px;">
                             ${canCancel ? `<button class="back-btn" onclick="cancelOrder(event, ${rental.rental_id})">Cancel</button>` : ''}
-                            <button class="back-btn" onclick="extendOrder(event, ${rental.rental_id})">Extend</button>
+                            ${rental.orderStatus === 'completed' || new Date(rental.rentalEndTime) < new Date()
+                                ? ''
+                                : `<button class="back-btn" onclick="extendOrder(event, ${rental.rental_id})">Extend</button>`}
                             <button class="back-btn" onclick="viewReceipt(event, ${rental.rental_id})">Receipt</button>
                         </div>
                     </div>
@@ -562,7 +564,7 @@
                 });
                 const data = await res.json();
                 if (!res.ok) throw new Error(data.error || 'Extend failed');
-                showSuccess(`Extended. New total: $${data.newTotalAmount}. Extra due: $${data.extraDue}`);
+                showSuccess(`Extended. New total: HK$${data.newTotalAmount}. Extra due: HK$${data.extraDue}`);
                 await loadUserRentals();
             } catch (e) {
                 showError(`Extend failed: ${e.message}`);
@@ -576,7 +578,7 @@
                 const data = await res.json();
                 if (!res.ok) throw new Error(data.error || 'Receipt failed');
                 if (!data.length) return alert('No payment records.');
-                const lines = data.map(p => `${p.paymentTime || ''} | $${p.paymentAmount} | ${p.paymentMethod} | ${p.paymentStatus} | ${p.TransactionNumber}`).join('\n');
+                const lines = data.map(p => `${p.paymentTime || ''} | HK$${p.paymentAmount} | ${p.paymentMethod} | ${p.paymentStatus} | ${p.TransactionNumber}`).join('\n');
                 alert(lines);
             } catch (e) {
                 showError(`Receipt failed: ${e.message}`);

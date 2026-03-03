@@ -80,84 +80,107 @@
         }
 
         .main-layout {
-            display: flex;
-            gap: 28px;
             max-width: 1400px;
-            margin: 32px auto 0 auto;
+            margin: 18px auto 0 auto;
             padding: 0 18px 32px 18px;
         }
-        
-        .sidebar {
-            width: 280px;
-            background: #fff;
-            border-radius: 12px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-            padding: 24px 20px 20px 20px;
-            min-width: 200px;
-            max-width: 320px;
-            margin-bottom: 20px;
-            height: fit-content;
+
+        .filter-bar {
             position: sticky;
-            top: 100px;
+            top: 70px;
+            z-index: 90;
+            background: rgba(255,255,255,0.9);
+            backdrop-filter: blur(10px);
+            border: 1px solid #e5e7eb;
+            border-radius: 14px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.06);
+            padding: 14px 14px 10px 14px;
+            margin: 18px auto 22px auto;
         }
-        
-        .sidebar h3 {
-            margin-top: 0;
-            font-size: 20px;
-            color: #2c3e50;
-            margin-bottom: 20px;
+
+        .filter-bar h3 {
+            margin: 0 0 10px 0;
+            font-size: 16px;
+            color: #0f172a;
             display: flex;
             align-items: center;
             gap: 10px;
+            justify-content: center;
         }
-        
-        .sidebar .filter-group {
-            margin-bottom: 18px;
+
+        .filter-form {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px 12px;
+            justify-content: center;
+            align-items: flex-end;
         }
-        
-        .sidebar label {
-            font-weight: 500;
-            color: #444;
+
+        .filter-field {
+            min-width: 170px;
+            max-width: 260px;
+            flex: 1;
+        }
+
+        .filter-field label {
+            font-weight: 600;
+            color: #334155;
             margin-bottom: 6px;
             display: block;
-            font-size: 15px;
+            font-size: 13px;
         }
-        
-        .sidebar select, .sidebar input[type="number"] {
+
+        .filter-field input,
+        .filter-field select {
             width: 100%;
             padding: 10px 12px;
-            border: 1px solid #ddd;
-            border-radius: 6px;
-            margin-bottom: 10px;
-            font-size: 15px;
-            transition: border 0.3s;
+            border: 1px solid #dbe3ef;
+            border-radius: 10px;
+            font-size: 14px;
+            transition: border 0.2s, box-shadow 0.2s;
+            background: #fff;
+            box-sizing: border-box;
         }
-        
-        .sidebar select:focus, .sidebar input[type="number"]:focus {
+
+        .filter-field input:focus,
+        .filter-field select:focus {
             border-color: #3498db;
             outline: none;
+            box-shadow: 0 0 0 3px rgba(52,152,219,0.15);
         }
-        
-        .sidebar button {
-            width: 100%;
+
+        .filter-actions {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .filter-actions button {
             background: #3498db;
             color: #fff;
             border: none;
-            border-radius: 6px;
-            padding: 12px 0;
-            font-size: 16px;
-            font-weight: bold;
+            border-radius: 999px;
+            padding: 10px 16px;
+            font-size: 14px;
+            font-weight: 700;
             cursor: pointer;
-            margin-top: 8px;
-            transition: background 0.3s;
-            display: flex;
+            transition: background 0.2s, transform 0.1s;
+            display: inline-flex;
             align-items: center;
             justify-content: center;
             gap: 8px;
+            min-width: 140px;
         }
-        
-        .sidebar button:hover {
-            background: #2980b9;
+
+        .filter-actions button.secondary {
+            background: #e2e8f0;
+            color: #1e293b;
+            font-weight: 600;
+            min-width: 110px;
+        }
+
+        .filter-actions button:hover {
+            transform: translateY(-1px);
         }
 
         .content-area {
@@ -202,7 +225,7 @@
         
         .vehicle-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            grid-template-columns: repeat(2, minmax(0, 1fr));
             gap: 28px;
         }
         
@@ -251,27 +274,42 @@
             color: #3498db;
             margin: 10px 0;
         }
-        
-        .vehicle-card button {
-            width: 100%;
+
+        .vehicle-card-actions {
+            display: flex;
+            gap: 10px;
             margin-top: 12px;
+        }
+
+        .vehicle-card-actions button {
+            flex: 1;
             background: #27ae60;
             color: #fff;
-            font-size: 16px;
+            font-size: 15px;
             border: none;
             border-radius: 6px;
-            padding: 12px 0;
-            font-weight: bold;
+            padding: 10px 0;
+            font-weight: 600;
             cursor: pointer;
-            transition: background 0.3s;
+            transition: background 0.3s, transform 0.1s;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 8px;
+            gap: 6px;
         }
-        
-        .vehicle-card button:hover {
-            background: #219653;
+
+        .vehicle-card-actions button.secondary {
+            background: #e2e8f0;
+            color: #1e293b;
+        }
+
+        .vehicle-card-actions button:disabled {
+            background: #94a3b8;
+            cursor: not-allowed;
+        }
+
+        .vehicle-card-actions button:hover:not(:disabled) {
+            transform: translateY(-1px);
         }
         
         .status-badge {
@@ -317,27 +355,18 @@
         }
         
         @media (max-width: 1100px) {
-            .main-layout { 
-                flex-direction: column; 
-                gap: 0; 
-            }
-            .sidebar { 
-                width: 100%; 
-                max-width: 100%; 
-                margin-bottom: 24px; 
-                position: static;
-            }
+            .filter-field { min-width: 160px; }
         }
         
-        @media (max-width: 700px) {
+        @media (max-width: 900px) {
             .main-layout { 
                 padding: 0 2vw 32px 2vw; 
             }
             .search-hero { 
                 padding: 24px 8px 18px 8px; 
             }
-            .vehicle-grid { 
-                grid-template-columns: 1fr; 
+            .vehicle-grid {
+                grid-template-columns: 1fr;
             }
             .navbar {
                 padding: 0 16px;
@@ -345,6 +374,14 @@
             .navbar .menu {
                 gap: 12px;
             }
+            .filter-bar { top: 70px; }
+            .filter-field { min-width: 45%; }
+        }
+
+        @media (max-width: 560px) {
+            .filter-field { min-width: 100%; }
+            .filter-actions { width: 100%; justify-content: center; }
+            .filter-actions button { width: 100%; }
         }
         
         .footer {
@@ -426,35 +463,79 @@
     </div>
     
     <div class="main-layout">
-        <aside class="sidebar">
-            <h3><i class="fa-solid fa-filter"></i> Filter Options</h3>
-            <form id="searchForm">
-                <div class="filter-group">
-                    <label for="carType">Vehicle Type</label>
+        <section class="filter-bar">
+            <h3><i class="fa-solid fa-filter"></i> 篩選條件</h3>
+            <form id="searchForm" class="filter-form">
+                <div class="filter-field">
+                    <label for="start_date">取車日期</label>
+                    <input type="date" id="start_date" name="start_date">
+                </div>
+                <div class="filter-field">
+                    <label for="end_date">還車日期</label>
+                    <input type="date" id="end_date" name="end_date">
+                </div>
+                <div class="filter-field">
+                    <label for="carType">車型</label>
                     <select id="carType" name="carType">
-                        <option value="">All Types</option>
+                        <option value="">不限</option>
                         <option value="SUV">SUV</option>
-                        <option value="Sedan">Sedan</option>
+                        <option value="Sedan">房車</option>
                         <option value="Coupe">Coupe</option>
-                        <option value="Hatchback">Hatchback</option>
-                        <option value="Convertible">Convertible</option>
-                        <option value="Minivan">Minivan</option>
-                        <option value="Truck">Truck</option>
-                        <option value="Electric">Electric</option>
+                        <option value="Hatchback">掀背車</option>
+                        <option value="Convertible">開篷車</option>
+                        <option value="Minivan">MPV / Van</option>
+                        <option value="Truck">貨Van / 小型貨車</option>
+                        <option value="Electric">電動車</option>
                     </select>
                 </div>
-                <div class="filter-group">
-                    <label for="min_price">Minimum Price (¥/day)</label>
+                <div class="filter-field">
+                    <label for="seatNum">座位數</label>
+                    <select id="seatNum" name="seatNum">
+                        <option value="">不限</option>
+                        <option value="2">2</option>
+                        <option value="4">4</option>
+                        <option value="5">5</option>
+                        <option value="6">6</option>
+                        <option value="7">7+</option>
+                    </select>
+                </div>
+                <div class="filter-field">
+                    <label for="brand">品牌</label>
+                    <input type="text" id="brand" name="brand" placeholder="例如：Toyota / Tesla">
+                </div>
+                <div class="filter-field">
+                    <label for="transmission">變速箱</label>
+                    <select id="transmission" name="transmission">
+                        <option value="">不限</option>
+                        <option value="auto">自動</option>
+                        <option value="manual">手動</option>
+                    </select>
+                </div>
+                <div class="filter-field">
+                    <label for="area">取車區域</label>
+                    <select id="area" name="area">
+                        <option value="">不限</option>
+                        <option value="HK Island">港島</option>
+                        <option value="Kowloon">九龍</option>
+                        <option value="New Territories">新界</option>
+                        <option value="Airport">機場</option>
+                    </select>
+                </div>
+                <div class="filter-field">
+                    <label for="min_price">最低日租金 (HK$)</label>
                     <input type="number" id="min_price" name="min_price" placeholder="0" min="0">
                 </div>
-                <div class="filter-group">
-                    <label for="max_price">Maximum Price (¥/day)</label>
-                    <input type="number" id="max_price" name="max_price" placeholder="1000" min="0">
+                <div class="filter-field">
+                    <label for="max_price">最高日租金 (HK$)</label>
+                    <input type="number" id="max_price" name="max_price" placeholder="2000" min="0">
                 </div>
-                <button type="submit"><i class="fa-solid fa-magnifying-glass"></i> Search Vehicles</button>
+                <div class="filter-actions">
+                    <button type="submit"><i class="fa-solid fa-magnifying-glass"></i> 搜尋</button>
+                    <button class="secondary" type="button" onclick="resetFilters()"><i class="fa-solid fa-rotate-left"></i> 重設</button>
+                </div>
             </form>
-        </aside>
-        
+        </section>
+
         <main class="content-area">
             <div class="search-hero">
                 <h2><i class="fa-solid fa-car-side"></i> Search Available Vehicles</h2>
@@ -590,7 +671,7 @@
                 return;
             }
             
-            resultsInfo.innerHTML = `<p>Found ${vehicles.length} vehicles</p>`;
+            resultsInfo.innerHTML = `<p>找到 ${vehicles.length} 輛可租用車輛</p>`;
             
             vehicleList.innerHTML = vehicles.map(vehicle => {
                 // Determine status badge
@@ -607,25 +688,32 @@
                 
                 // Generate feature tags
                 const features = [];
-                if (vehicle.seatNum) features.push(`${vehicle.seatNum} seats`);
-                if (vehicle.year) features.push(`${vehicle.year} model`);
+                if (vehicle.seatNum) features.push(`${vehicle.seatNum} 座位`);
+                if (vehicle.year) features.push(`${vehicle.year} 年份`);
                 if (vehicle.color) features.push(vehicle.color);
                 
+                const title = `${vehicle.brand || ''} ${vehicle.model || ''}`.trim() || (vehicle.carType || '車輛');
                 return `
                 <div class="vehicle-card">
                     <span class="status-badge ${statusClass}">${statusText}</span>
-                    <h3>${vehicle.brand || ''} ${vehicle.model || ''}</h3>
-                    <p><i class="fa-solid fa-car"></i> ${vehicle.carType}</p>
+                    <h3>${title}</h3>
+                    <p><i class="fa-solid fa-car"></i> ${vehicle.carType || '車輛類型未設定'}</p>
                     <div class="vehicle-features">
                         ${features.map(feature => `<span class="feature-tag">${feature}</span>`).join('')}
                     </div>
-                    <div class="price">¥${vehicle.dailyPrice}/day</div>
-                    <p><i class="fa-solid fa-location-dot"></i> ${vehicle.location || 'Location information pending update'}</p>
+                    <div class="price">HK$${vehicle.dailyPrice}/日</div>
+                    <p><i class="fa-solid fa-location-dot"></i> ${vehicle.location || '取車地點待更新'}</p>
                     ${vehicle.description ? `<p class="desc">${vehicle.description}</p>` : ''}
-                    <button onclick="selectVehicle(${vehicle.vehicle_id})" ${vehicle.status !== 'available' ? 'disabled style="background: #95a5a6; cursor: not-allowed;"' : ''}>
-                        <i class="fa-solid fa-calendar-check"></i> 
-                        ${vehicle.status === 'available' ? 'Book Now' : vehicle.status === 'rented' ? 'Already Rented' : 'Under Maintenance'}
-                    </button>
+                    <div class="vehicle-card-actions">
+                        <button onclick="selectVehicle(${vehicle.vehicle_id})" ${vehicle.status !== 'available' ? 'disabled' : ''}>
+                            <i class="fa-solid fa-calendar-check"></i>
+                            ${vehicle.status === 'available' ? 'Book' : '不可預訂'}
+                        </button>
+                        <button class="secondary" type="button" onclick="viewVehicleDetail(${vehicle.vehicle_id})">
+                            <i class="fa-solid fa-circle-info"></i>
+                            Details
+                        </button>
+                    </div>
                 </div>
                 `;
             }).join('');
@@ -635,13 +723,23 @@
         function selectVehicle(vehicleId) {
             const userId = localStorage.getItem('user_id');
             if (!userId) {
-                alert('Please log in first to book a vehicle');
+                alert('請先登入帳戶再預訂車輛');
                 window.location.href = 'login.html';
                 return;
             }
             
             localStorage.setItem('selected_vehicle_id', vehicleId);
             window.location.href = 'insurance.html';
+        }
+
+        function viewVehicleDetail(vehicleId) {
+            window.location.href = 'car-detail.html?vehicle_id=' + encodeURIComponent(vehicleId);
+        }
+
+        function resetFilters() {
+            const form = document.getElementById('searchForm');
+            form.reset();
+            searchVehicles();
         }
     </script>
 </body>

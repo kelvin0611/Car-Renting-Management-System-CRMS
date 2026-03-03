@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="zh-HK">
+<head>
+  <meta charset="UTF-8">
+  <title>車輛詳情</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    body {
+      font-family: 'Segoe UI', Arial, sans-serif;
+      margin: 0;
+      background-color: #f5f5f5;
+    }
+    .navbar {
+      background: #fff;
+      box-shadow: 0 2px 8px #e0e0e0;
+      padding: 0 32px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 64px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .navbar .brand {
+      display: flex;
+      align-items: center;
+      font-size: 24px;
+      font-weight: bold;
+      color: #007bff;
+    }
+    .navbar .brand i {
+      margin-right: 10px;
+      font-size: 26px;
+    }
+    .main-layout {
+      max-width: 1100px;
+      margin: 24px auto 40px auto;
+      padding: 0 18px;
+      display: grid;
+      grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
+      gap: 28px;
+    }
+    @media (max-width: 900px) {
+      .main-layout {
+        grid-template-columns: 1fr;
+      }
+    }
+    .gallery {
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+      padding: 16px;
+    }
+    .gallery-main {
+      border-radius: 10px;
+      overflow: hidden;
+      background: #0f172a;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 280px;
+      margin-bottom: 12px;
+    }
+    .gallery-main img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    .gallery-thumbs {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+    }
+    .gallery-thumbs img {
+      width: 80px;
+      height: 60px;
+      object-fit: cover;
+      border-radius: 6px;
+      cursor: pointer;
+      opacity: 0.7;
+      border: 2px solid transparent;
+    }
+    .gallery-thumbs img.active,
+    .gallery-thumbs img:hover {
+      opacity: 1;
+      border-color: #3b82f6;
+    }
+    .detail-panel {
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+      padding: 24px 22px 22px 22px;
+    }
+    .detail-title {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 12px;
+      margin-bottom: 10px;
+    }
+    .detail-title h1 {
+      margin: 0;
+      font-size: 22px;
+      color: #0f172a;
+    }
+    .detail-price {
+      font-size: 20px;
+      font-weight: 700;
+      color: #2563eb;
+    }
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      padding: 3px 10px;
+      border-radius: 999px;
+      font-size: 12px;
+      background: #e2e8f0;
+      color: #475569;
+      gap: 4px;
+    }
+    .meta-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 10px;
+      margin: 14px 0 8px 0;
+      font-size: 14px;
+      color: #475569;
+    }
+    .meta-item span:first-child {
+      font-weight: 600;
+      margin-right: 4px;
+    }
+    .desc-block {
+      margin-top: 10px;
+      font-size: 14px;
+      color: #4b5563;
+      line-height: 1.6;
+    }
+    .feature-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 8px;
+    }
+    .tag {
+      font-size: 12px;
+      padding: 4px 9px;
+      border-radius: 999px;
+      background: #eff6ff;
+      color: #1d4ed8;
+    }
+    .actions {
+      margin-top: 18px;
+      display: flex;
+      gap: 10px;
+    }
+    .btn-primary {
+      flex: 1;
+      border: none;
+      border-radius: 999px;
+      padding: 11px 14px;
+      background: #16a34a;
+      color: #fff;
+      font-weight: 600;
+      font-size: 15px;
+      cursor: pointer;
+    }
+    .btn-secondary {
+      flex: 1;
+      border-radius: 999px;
+      border: 1px solid #cbd5f1;
+      padding: 11px 14px;
+      background: #fff;
+      color: #1e293b;
+      font-weight: 500;
+      font-size: 14px;
+      cursor: pointer;
+    }
+  </style>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+</head>
+<body>
+  <div class="navbar">
+    <div class="brand">
+      <i class="fa-solid fa-car-side"></i> P2P Car Rental
+    </div>
+  </div>
+  <div class="main-layout">
+    <section class="gallery">
+      <div class="gallery-main">
+        <img id="mainImage" src="" alt="Vehicle image">
+      </div>
+      <div id="thumbs" class="gallery-thumbs">
+      </div>
+    </section>
+    <section class="detail-panel">
+      <div class="detail-title">
+        <div>
+          <h1 id="carTitle">車輛詳情</h1>
+          <div class="pill" id="carStatusPill"></div>
+        </div>
+        <div class="detail-price" id="dailyPriceText"></div>
+      </div>
+      <div class="meta-grid">
+        <div class="meta-item">
+          <span>年份</span><span id="metaYear">-</span>
+        </div>
+        <div class="meta-item">
+          <span>座位</span><span id="metaSeats">-</span>
+        </div>
+        <div class="meta-item">
+          <span>變速箱</span><span id="metaGearbox">-</span>
+        </div>
+        <div class="meta-item">
+          <span>里程</span><span id="metaMileage">-</span>
+        </div>
+        <div class="meta-item">
+          <span>油耗</span><span id="metaFuel">-</span>
+        </div>
+        <div class="meta-item">
+          <span>取車地點</span><span id="metaLocation">-</span>
+        </div>
+      </div>
+      <div class="desc-block" id="descBlock"></div>
+      <div class="feature-tags" id="featureTags"></div>
+      <div class="actions">
+        <button class="btn-primary" id="bookBtn">
+          立即預訂
+        </button>
+        <button class="btn-secondary" onclick="window.history.back()">
+          返回搜尋結果
+        </button>
+      </div>
+    </section>
+  </div>
+  <script src="config.js"></script>
+  <script>
+    function getQueryParam(name) {
+      const url = new URL(window.location.href);
+      return url.searchParams.get(name);
+    }
+
+    function buildImageKeys(vehicle) {
+      const baseKey = vehicle.imageKey || vehicle.image_key ||
+        ('car' + String.fromCharCode(65 + ((vehicle.vehicle_id || 1) - 1) % 5));
+      const keys = [baseKey, baseKey + '_1', baseKey + '_2'];
+      return keys.map(k => 'images/' + k + '.jpg');
+    }
+
+    async function loadVehicleDetail() {
+      const id = getQueryParam('vehicle_id');
+      if (!id) return;
+      try {
+        const res = await fetch(`${API_BASE}/vehicles/${id}`);
+        const vehicle = await res.json();
+        if (!res.ok) throw new Error(vehicle.error || '載入車輛資料失敗');
+
+        const titleParts = [vehicle.brand, vehicle.model].filter(Boolean).join(' ');
+        const carType = vehicle.carType || '車輛';
+        document.getElementById('carTitle').textContent = (titleParts || carType) + ' · ' + carType;
+
+        document.getElementById('dailyPriceText').textContent =
+          vehicle.dailyPrice ? ('HK$' + vehicle.dailyPrice + ' / 日') : '-';
+
+        document.getElementById('metaYear').textContent = vehicle.year || '-';
+        document.getElementById('metaSeats').textContent = (vehicle.seatNum || '-') + ' 座';
+        document.getElementById('metaGearbox').textContent = vehicle.transmission || '自動 / 手動';
+        document.getElementById('metaMileage').textContent = vehicle.mileage ? (vehicle.mileage + ' km') : '-';
+        document.getElementById('metaFuel').textContent = vehicle.fuelConsumption || '—';
+        document.getElementById('metaLocation').textContent = vehicle.location || '-';
+
+        const statusPill = document.getElementById('carStatusPill');
+        const status = vehicle.status || 'available';
+        statusPill.textContent = status === 'available' ? '可預訂' :
+          status === 'rented' ? '已出租' : '暫停出租';
+
+        const descBlock = document.getElementById('descBlock');
+        const desc = vehicle.description || '';
+        if (desc) {
+          const sentences = desc.split(/(?<=[。.!?])/).filter(Boolean).slice(0, 5);
+          descBlock.innerHTML = sentences.join('<br>');
+        } else {
+          descBlock.textContent = '車主尚未提供詳細描述。';
+        }
+
+        const features = [];
+        if (vehicle.features && Array.isArray(vehicle.features)) {
+          vehicle.features.forEach(f => features.push(f));
+        }
+        if (vehicle.hasCarPlay) features.push('Apple CarPlay');
+        if (vehicle.hasAndroidAuto) features.push('Android Auto');
+        if (vehicle.hasAutopilot) features.push('輔助駕駛');
+
+        const featureTags = document.getElementById('featureTags');
+        featureTags.innerHTML = features.map(f => `<span class="tag">${f}</span>`).join('');
+
+        const imageUrls = buildImageKeys(vehicle);
+        const mainImg = document.getElementById('mainImage');
+        const thumbs = document.getElementById('thumbs');
+        mainImg.src = imageUrls[0];
+        thumbs.innerHTML = imageUrls.map((url, idx) =>
+          `<img src="${url}" ${idx === 0 ? 'class="active"' : ''} data-url="${url}">`
+        ).join('');
+        thumbs.addEventListener('click', (e) => {
+          if (e.target.tagName.toLowerCase() !== 'img') return;
+          const url = e.target.getAttribute('data-url');
+          mainImg.src = url;
+          thumbs.querySelectorAll('img').forEach(img => img.classList.remove('active'));
+          e.target.classList.add('active');
+        });
+
+        document.getElementById('bookBtn').onclick = function () {
+          localStorage.setItem('selected_vehicle_id', vehicle.vehicle_id);
+          window.location.href = 'insurance.html';
+        };
+      } catch (e) {
+        alert(e.message || '載入車輛資料失敗');
+      }
+    }
+
+    window.onload = loadVehicleDetail;
+  </script>
+</body>
+</html>
+
